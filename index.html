@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marc's Magic Movie Maker</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="M.M.M.M.">
+<link rel="apple-touch-icon" href="/icon-512.svg">
+<link rel="icon" type="image/svg+xml" href="/icon-512.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=Limelight&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0a;
+    --bg-soft: #131313;
+    --bg-card: #1a1a1a;
+    --ink: #f5f1e8;
+    --ink-dim: #8a8479;
+    --border: #2a2a2a;
+    --gold: #d4a958;
+    --gold-bright: #f0c674;
+    --crimson: #c1272d;
+    --crimson-bright: #e8484e;
+    --neon-pink: #ff2d92;
+    --neon-blue: #00d4ff;
+    --accent-cinema: var(--gold);
+    --accent-nsfw: var(--crimson);
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(212,169,88,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(193,39,45,0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .wrap { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; padding: 24px 20px 80px; }
+
+  header {
+    text-align: center;
+    padding: 24px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .logo-block {
+    position: relative;
+    display: inline-block;
+    padding: 20px 40px;
+    margin-bottom: 16px;
+  }
+
+  .logo-block::before, .logo-block::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 8px;
+    background-image: radial-gradient(circle, var(--gold) 0%, var(--gold) 30%, transparent 35%);
+    background-size: 16px 16px;
+    background-repeat: repeat-x;
+    background-position: center;
+    animation: bulbFlicker 2s infinite;
+    filter: drop-shadow(0 0 4px var(--gold));
+  }
+  .logo-block::before { top: 0; }
+  .logo-block::after { bottom: 0; animation-delay: 1s; }
+
+  @keyframes bulbFlicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+  .logo-svg-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .film-reel { width: 56px; height: 56px; animation: reelSpin 8s linear infinite; flex-shrink: 0; }
+  @keyframes reelSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .hero-logo {
+    width: clamp(240px, 60vw, 360px);
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 30px rgba(212,169,88,0.25));
+  }
+
+  .marquee-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--ink-dim);
+    margin-bottom: 4px;
+  }
+  .marquee-tag::before, .marquee-tag::after { content: '✦'; margin: 0 12px; color: var(--gold); }
+
+  h1.brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 8vw, 72px);
+    letter-spacing: 0.04em;
+    line-height: 0.95;
+    background: linear-gradient(180deg, var(--ink) 0%, var(--gold) 50%, #8a6a2a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 60px rgba(212,169,88,0.15);
+    display: inline-block;
+  }
+  h1.brand .amp { color: var(--crimson); -webkit-text-fill-color: var(--crimson); }
+  h1.brand em { font-family: 'Limelight', cursive; font-style: normal; font-size: 0.7em; font-weight: 400; -webkit-text-fill-color: var(--gold-bright); color: var(--gold-bright); letter-spacing: 0.02em; }
+
+  .subline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--ink-dim);
+    margin-top: 12px;
+  }
+
+  .film-strip {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 14px;
+  }
+  .film-strip span {
+    width: 14px;
+    height: 18px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+  .film-strip span:nth-child(odd) { background: var(--bg-soft); border: 1px solid var(--border); }
+
+  .section-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .tab {
+    position: relative;
+    padding: 0;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    text-align: left;
+    min-height: 140px;
+  }
+  .tab-visual { position: absolute; inset: 0; opacity: 0.25; transition: opacity 0.3s; }
+  .tab.active .tab-visual { opacity: 0.5; }
+  .tab-content {
+    position: relative;
+    padding: 22px 18px;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .tab[data-section="cinema"] .tab-visual {
+    background:
+      linear-gradient(135deg, transparent 30%, rgba(212,169,88,0.15) 50%, transparent 70%),
+      repeating-linear-gradient(90deg, transparent 0, transparent 8px, rgba(212,169,88,0.08) 8px, rgba(212,169,88,0.08) 9px);
+  }
+  .tab[data-section="cinema"] .deco-frame {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 60px; height: 60px;
+    border: 2px solid var(--gold);
+    border-radius: 2px;
+    opacity: 0.4;
+  }
+  .tab[data-section="cinema"] .deco-frame::before {
+    content: '';
+    position: absolute;
+    top: 4px; left: 4px; right: 4px; bottom: 4px;
+    border: 1px solid var(--gold);
+  }
+
+  .tab[data-section="nsfw"] .tab-visual {
+    background:
+      radial-gradient(ellipse at top right, rgba(255,45,146,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(193,39,45,0.2) 0%, transparent 50%);
+  }
+  .tab[data-section="nsfw"] .deco-neon {
+    position: absolute;
+    top: 14px; right: 14px;
+    font-family: 'Limelight', cursive;
+    font-size: 32px;
+    color: var(--neon-pink);
+    opacity: 0.5;
+    text-shadow: 0 0 8px var(--neon-pink), 0 0 16px var(--neon-pink);
+    animation: neonPulse 3s infinite;
+  }
+  @keyframes neonPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+
+  .tab .tnum { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-dim); letter-spacing: 0.2em; }
+  .tab .ttitle { font-family: 'Bebas Neue', sans-serif; font-size: clamp(22px, 4.5vw, 32px); letter-spacing: 0.05em; margin-top: 6px; line-height: 1; }
+  .tab .tsub { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--ink-dim); margin-top: 4px; }
+  .tab[data-section="cinema"] .ttitle { color: var(--gold); }
+  .tab[data-section="nsfw"] .ttitle { color: var(--crimson-bright); }
+  .tab.active { border-color: var(--gold); }
+  .tab[data-section="nsfw"].active { border-color: var(--crimson); }
+  .tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+    z-index: 3;
+  }
+  .tab[data-section="nsfw"]::after { background: var(--crimson); }
+  .tab.active::after { transform: scaleX(1); }
+
+  .panel { display: none; animation: fadeIn 0.5s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-hero {
+    position: relative;
+    height: 200px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+  }
+
+  .cinema-hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(212,169,88,0.25) 0%, transparent 40%),
+      linear-gradient(180deg, #1a1410 0%, #0a0805 100%);
+  }
+  .cinema-hero-bg::before {
+    content: '';
+    position: absolute;
+    left: -10%; top: 30%;
+    width: 130%; height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--gold) 20%, var(--gold-bright) 50%, var(--gold) 80%, transparent 100%);
+    transform: rotate(-3deg);
+    opacity: 0.4;
+    filter: blur(1px);
+  }
+  .cinema-hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 30% 40%, var(--gold) 1px, transparent 2px),
+      radial-gradient(circle at 60% 70%, var(--gold-bright) 1px, transparent 2px),
+      radial-gradient(circle at 80% 30%, var(--gold) 1px, transparent 2px),
+      radial-gradient(circle at 45% 60%, var(--gold-bright) 1px, transparent 2px);
+    opacity: 0.6;
+  }
+
+  .nsfw-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #1a0510 0%, #2a0820 50%, #0a0510 100%);
+  }
+  .nsfw-hero-bg::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 30%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--crimson) 30%, var(--neon-pink) 50%, var(--crimson) 70%, transparent);
+    box-shadow: 0 0 20px var(--neon-pink), 0 -2px 30px var(--crimson);
+  }
+  .nsfw-hero-bg::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0;
+    height: 30%;
+    background:
+      linear-gradient(180deg, transparent 0%, #000 90%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 100' preserveAspectRatio='none'><path d='M0,100 L0,40 L60,40 L60,20 L90,20 L90,50 L140,50 L140,10 L170,10 L170,45 L220,45 L220,30 L260,30 L260,55 L320,55 L320,15 L350,15 L350,40 L400,40 L400,25 L450,25 L450,5 L490,5 L490,35 L540,35 L540,50 L590,50 L590,20 L640,20 L640,45 L700,45 L700,30 L750,30 L750,55 L810,55 L810,15 L860,15 L860,40 L910,40 L910,25 L960,25 L960,5 L1010,5 L1010,35 L1060,35 L1060,50 L1110,50 L1110,30 L1160,30 L1160,45 L1200,45 L1200,100 Z' fill='%23000'/></svg>") repeat-x bottom;
+    background-size: 100% 100%, 1200px 100%;
+  }
+
+  .hero-content { position: relative; z-index: 2; height: 100%; display: flex; align-items: center; padding: 0 28px; }
+  .hero-content .sec-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 14vw, 120px);
+    color: var(--accent-cinema);
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    opacity: 0.9;
+    text-shadow: 0 0 30px rgba(212,169,88,0.3);
+  }
+  #panel-nsfw .hero-content .sec-num {
+    color: var(--neon-pink);
+    text-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--crimson);
+  }
+  .hero-content .sec-text { margin-left: 20px; border-left: 1px solid var(--border); padding-left: 20px; }
+  .hero-content .sec-text h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(24px, 5vw, 36px); letter-spacing: 0.05em; line-height: 1; }
+  .hero-content .sec-text p { font-style: italic; color: var(--ink-dim); margin-top: 6px; font-size: 14px; }
+  .hero-content .sec-text .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    padding: 4px 10px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    margin-top: 10px;
+  }
+  #panel-nsfw .hero-content .sec-text .badge { border-color: var(--crimson); color: var(--crimson-bright); }
+
+  .cinema-hero-bg .perf {
+    position: absolute;
+    left: 0; right: 0;
+    height: 12px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .cinema-hero-bg .perf.top { top: 0; }
+  .cinema-hero-bg .perf.bottom { bottom: 0; }
+  .cinema-hero-bg .perf::before {
+    content: '';
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(90deg,
+      var(--bg) 0px, var(--bg) 8px,
+      transparent 8px, transparent 24px,
+      var(--bg) 24px, var(--bg) 32px);
+    background-size: 32px 12px;
+    opacity: 0.7;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  /* Category filter chips */
+  .cat-filter {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .cat-chip {
+    padding: 8px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--ink-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .cat-chip:hover { color: var(--ink); border-color: var(--ink-dim); }
+  .cat-chip.active {
+    background: var(--gold);
+    color: var(--bg);
+    border-color: var(--gold);
+  }
+  #panel-nsfw .cat-chip.active {
+    background: var(--crimson);
+    color: var(--ink);
+    border-color: var(--crimson);
+  }
+  .cat-chip .count {
+    margin-left: 6px;
+    opacity: 0.7;
+    font-weight: 600;
+  }
+  .model-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .model-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 24px; height: 24px;
+    border-top: 2px solid var(--ink-dim);
+    border-left: 2px solid var(--ink-dim);
+    opacity: 0.3;
+    transition: opacity 0.25s;
+  }
+  .model-card:hover::before { opacity: 0.8; }
+  .model-card:hover { border-color: var(--accent-cinema); transform: translateY(-2px); }
+  #panel-nsfw .model-card:hover { border-color: var(--accent-nsfw); }
+  .model-card.selected {
+    border-color: var(--accent-cinema);
+    background: linear-gradient(180deg, rgba(212,169,88,0.06) 0%, var(--bg-card) 100%);
+  }
+  .model-card.selected::before { border-color: var(--gold); opacity: 1; }
+  #panel-nsfw .model-card.selected {
+    border-color: var(--accent-nsfw);
+    background: linear-gradient(180deg, rgba(193,39,45,0.08) 0%, var(--bg-card) 100%);
+  }
+  #panel-nsfw .model-card.selected::before { border-color: var(--crimson); opacity: 1; }
+
+  .model-card .ribbon {
+    position: absolute;
+    top: 12px; right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    padding: 3px 8px;
+    background: var(--bg);
+    color: var(--ink-dim);
+    border: 1px solid var(--border);
+  }
+  .model-card .ribbon.hot { color: var(--crimson-bright); border-color: var(--crimson); }
+  .model-card .ribbon.new { color: var(--gold); border-color: var(--gold); }
+  .model-card .mtag { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--ink-dim); }
+  .model-card h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em; margin-top: 8px; line-height: 1.05; }
+  .model-card .desc { font-size: 14px; color: var(--ink-dim); margin-top: 8px; line-height: 1.4; min-height: 60px; }
+  .model-card .price {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .model-card .price .amt { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--ink); letter-spacing: 0.02em; }
+  .model-card .price .amt .currency { font-size: 14px; color: var(--ink-dim); }
+  .model-card .price .unit { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-dim); letter-spacing: 0.15em; }
+  .model-card .specs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .model-card .specs span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    color: var(--ink-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .studio {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-top: 24px;
+    position: relative;
+  }
+  .studio::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px;
+    width: 80px; height: 4px;
+    background: var(--gold);
+  }
+  #panel-nsfw .studio::before { background: var(--crimson); }
+
+  .studio-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .studio-header .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.25em; color: var(--ink-dim); }
+  .studio-header .selected-model {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.04em;
+    color: var(--accent-cinema);
+    margin-top: 2px;
+  }
+  #panel-nsfw .studio-header .selected-model { color: var(--accent-nsfw); }
+
+  .field { margin-bottom: 20px; }
+  .field-label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .field-label .req { color: var(--gold); }
+  #panel-nsfw .field-label .req { color: var(--crimson-bright); }
+
+  textarea, input[type="text"], input[type="number"], select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 12px 14px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    transition: border-color 0.2s;
+  }
+  textarea { min-height: 100px; resize: vertical; }
+  textarea:focus, input:focus, select:focus { outline: none; border-color: var(--accent-cinema); }
+  #panel-nsfw textarea:focus, #panel-nsfw input:focus, #panel-nsfw select:focus { border-color: var(--accent-nsfw); }
+
+  .upload-zone {
+    border: 1px dashed var(--border);
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg);
+    position: relative;
+  }
+  .upload-zone:hover { border-color: var(--accent-cinema); }
+  #panel-nsfw .upload-zone:hover { border-color: var(--accent-nsfw); }
+  .upload-zone .ic { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--ink-dim); }
+  .upload-zone .hint { font-style: italic; font-size: 14px; color: var(--ink-dim); margin-top: 4px; }
+  .upload-zone img { max-width: 100%; max-height: 200px; display: block; margin: 0 auto; }
+  .upload-zone input { display: none; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 540px) { .row { grid-template-columns: 1fr; } }
+
+  .estimate {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 20px 0;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .estimate .est-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.25em; color: var(--ink-dim); }
+  .estimate .est-amt {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  .estimate .est-amt .pre { color: var(--ink-dim); font-size: 14px; }
+  .estimate .breakdown { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-dim); text-align: right; }
+
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 16px 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-primary { background: var(--gold); color: var(--bg); }
+  .btn-primary:hover:not(:disabled) { background: var(--gold-bright); }
+  #panel-nsfw .btn-primary { background: var(--crimson); color: var(--ink); }
+  #panel-nsfw .btn-primary:hover:not(:disabled) { background: var(--crimson-bright); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--ink); }
+
+  .output {
+    margin-top: 24px;
+    padding: 24px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    min-height: 120px;
+    display: none;
+  }
+  .output.show { display: block; }
+  .output .out-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.25em; color: var(--ink-dim); margin-bottom: 12px; }
+  .output .status-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: var(--bg-soft);
+    border-left: 3px solid var(--gold);
+  }
+  #panel-nsfw .output .status-line { border-left-color: var(--crimson); }
+  .output .status-line.err { border-left-color: var(--crimson); color: var(--crimson-bright); }
+  .output .status-line.ok { border-left-color: var(--gold-bright); }
+
+  .output video {
+    width: 100%;
+    max-width: 720px;
+    display: block;
+    margin: 0 auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+
+  .output .dl-btn {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 10px 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.15em;
+    background: var(--bg-soft);
+    color: var(--ink);
+    border: 1px solid var(--gold);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .output .dl-btn:hover { background: var(--gold); color: var(--bg); }
+
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--ink-dim);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--ink-dim);
+  }
+  footer .foot-divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px; }
+  footer .foot-divider span { width: 40px; height: 1px; background: var(--border); }
+  footer .foot-divider .star { font-size: 16px; color: var(--gold); }
+
+  .age-gate {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .age-gate.show { display: flex; }
+  .age-gate-card {
+    background: var(--bg-card);
+    border: 1px solid var(--crimson);
+    padding: 32px 24px;
+    max-width: 420px;
+    text-align: center;
+    position: relative;
+  }
+  .age-gate-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 3px;
+    background: var(--crimson);
+    box-shadow: 0 0 15px var(--crimson);
+  }
+  .age-gate-card .age-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--crimson-bright); letter-spacing: 0.05em; }
+  .age-gate-card p { font-size: 15px; color: var(--ink-dim); margin: 12px 0 20px; line-height: 1.5; }
+  .age-gate-actions { display: flex; gap: 12px; }
+
+  .helper { font-size: 13px; color: var(--ink-dim); font-style: italic; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="logo-block">
+      <!-- Heart-framed cinematic logo: photographer + Vegas skyline -->
+      <svg class="hero-logo" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" aria-label="Marc's Magic Movie Maker logo">
+        <defs>
+          <!-- Heart-shaped clip path -->
+          <clipPath id="heartClip">
+            <path d="M300 340 C 80 200, 40 100, 130 60 C 195 30, 260 70, 300 120 C 340 70, 405 30, 470 60 C 560 100, 520 200, 300 340 Z"/>
+          </clipPath>
+          <!-- Vegas sunset gradient -->
+          <linearGradient id="vegasSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1a1230"/>
+            <stop offset="40%" stop-color="#3d2050"/>
+            <stop offset="70%" stop-color="#c67a4a"/>
+            <stop offset="100%" stop-color="#f0a87a"/>
+          </linearGradient>
+          <!-- Interior warm light -->
+          <radialGradient id="interiorGlow" cx="0.75" cy="0.4" r="0.5">
+            <stop offset="0%" stop-color="#d4a958" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#d4a958" stop-opacity="0"/>
+          </radialGradient>
+          <!-- Window pane reflection -->
+          <linearGradient id="windowGlass" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.05"/>
+            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Scene inside heart -->
+        <g clip-path="url(#heartClip)">
+          <!-- Sky -->
+          <rect width="600" height="360" fill="url(#vegasSky)"/>
+          <!-- Distant mountains -->
+          <path d="M0 200 L80 170 L140 185 L220 160 L300 180 L380 165 L460 175 L540 160 L600 175 L600 220 L0 220 Z" fill="#1a1028" opacity="0.7"/>
+          <!-- Vegas skyline silhouette -->
+          <g fill="#0a0515">
+            <!-- Eiffel tower replica -->
+            <path d="M120 220 L122 130 L118 130 Z M115 220 L125 220 L125 215 L115 215 Z M113 200 L127 200 L127 195 L113 195 Z M111 180 L129 180 L129 175 L111 175 Z"/>
+            <!-- Buildings -->
+            <rect x="50" y="190" width="40" height="40"/>
+            <rect x="155" y="185" width="35" height="45"/>
+            <rect x="195" y="170" width="50" height="60"/>
+            <rect x="250" y="195" width="30" height="35"/>
+            <rect x="285" y="180" width="40" height="50"/>
+            <rect x="330" y="170" width="45" height="60"/>
+            <rect x="380" y="190" width="35" height="40"/>
+            <rect x="420" y="175" width="40" height="55"/>
+            <rect x="465" y="195" width="30" height="35"/>
+            <!-- Stratosphere -->
+            <path d="M500 230 L502 175 L506 165 L514 160 L518 165 L520 175 L522 230 Z"/>
+            <circle cx="511" cy="160" r="6"/>
+          </g>
+          <!-- Skyline window lights -->
+          <g fill="#ffd97a" opacity="0.7">
+            <rect x="58" y="200" width="3" height="3"/><rect x="65" y="205" width="3" height="3"/><rect x="75" y="200" width="3" height="3"/><rect x="82" y="210" width="3" height="3"/>
+            <rect x="200" y="180" width="3" height="3"/><rect x="210" y="190" width="3" height="3"/><rect x="220" y="200" width="3" height="3"/><rect x="230" y="185" width="3" height="3"/>
+            <rect x="290" y="195" width="3" height="3"/><rect x="300" y="200" width="3" height="3"/><rect x="315" y="190" width="3" height="3"/>
+            <rect x="340" y="185" width="3" height="3"/><rect x="355" y="200" width="3" height="3"/><rect x="365" y="195" width="3" height="3"/>
+            <rect x="425" y="195" width="3" height="3"/><rect x="440" y="190" width="3" height="3"/><rect x="450" y="200" width="3" height="3"/>
+          </g>
+          <!-- Window frame structure (penthouse interior) -->
+          <rect x="0" y="0" width="600" height="240" fill="url(#windowGlass)"/>
+          <line x1="200" y1="0" x2="200" y2="240" stroke="#d4a958" stroke-width="1.5" opacity="0.4"/>
+          <line x1="400" y1="0" x2="400" y2="240" stroke="#d4a958" stroke-width="1.5" opacity="0.4"/>
+          <!-- Floor -->
+          <rect x="0" y="240" width="600" height="120" fill="#1a1208"/>
+          <rect x="0" y="240" width="600" height="120" fill="url(#interiorGlow)"/>
+          <!-- Rug -->
+          <ellipse cx="320" cy="320" rx="180" ry="30" fill="#5a3a55" opacity="0.6"/>
+
+          <!-- Photographer -->
+          <g>
+            <!-- Legs -->
+            <path d="M195 290 L188 340 L200 340 L208 295 Z" fill="#3a4a6a"/>
+            <path d="M215 290 L220 340 L232 340 L228 295 Z" fill="#3a4a6a"/>
+            <!-- Shoes -->
+            <ellipse cx="194" cy="343" rx="14" ry="5" fill="#c1272d"/>
+            <ellipse cx="226" cy="343" rx="14" ry="5" fill="#c1272d"/>
+            <!-- Torso -->
+            <path d="M185 220 L240 220 L235 295 L195 295 Z" fill="#1a1a1a"/>
+            <!-- Arms (one extended to camera) -->
+            <path d="M240 230 L290 245 L295 255 L245 245 Z" fill="#1a1a1a"/>
+            <path d="M185 235 L165 270 L172 275 L195 245 Z" fill="#1a1a1a"/>
+            <!-- Hands -->
+            <circle cx="293" cy="252" r="6" fill="#d4a07a"/>
+            <circle cx="168" cy="273" r="6" fill="#d4a07a"/>
+            <!-- Head -->
+            <circle cx="215" cy="200" r="18" fill="#d4a07a"/>
+            <!-- Beard scruff -->
+            <path d="M205 208 Q215 216 225 208 L223 214 Q215 220 207 214 Z" fill="#3a2a1a" opacity="0.6"/>
+            <!-- Backwards cap -->
+            <path d="M198 188 Q215 178 232 188 L232 195 Q215 192 198 195 Z" fill="#2a2a2a"/>
+            <ellipse cx="194" cy="194" rx="6" ry="3" fill="#2a2a2a"/>
+            <!-- Tattoo hint on arm -->
+            <path d="M188 250 Q192 260 188 270 Q185 263 188 250" fill="none" stroke="#0a0a0a" stroke-width="1" opacity="0.5"/>
+          </g>
+
+          <!-- Vintage film camera on tripod -->
+          <g>
+            <!-- Tripod legs -->
+            <line x1="320" y1="270" x2="290" y2="340" stroke="#1a1a1a" stroke-width="3"/>
+            <line x1="320" y1="270" x2="320" y2="340" stroke="#1a1a1a" stroke-width="3"/>
+            <line x1="320" y1="270" x2="350" y2="340" stroke="#1a1a1a" stroke-width="3"/>
+            <!-- Tripod head -->
+            <rect x="312" y="262" width="16" height="10" fill="#2a2a2a"/>
+            <!-- Camera body -->
+            <rect x="295" y="220" width="60" height="42" rx="3" fill="#1a1a1a" stroke="#3a3a3a" stroke-width="1"/>
+            <!-- Reels on top -->
+            <circle cx="310" cy="215" r="14" fill="#2a2a2a" stroke="#4a4a4a" stroke-width="1.5"/>
+            <circle cx="310" cy="215" r="4" fill="#1a1a1a"/>
+            <circle cx="340" cy="215" r="14" fill="#2a2a2a" stroke="#4a4a4a" stroke-width="1.5"/>
+            <circle cx="340" cy="215" r="4" fill="#1a1a1a"/>
+            <!-- Lens -->
+            <rect x="350" y="232" width="18" height="18" fill="#0a0a0a"/>
+            <circle cx="368" cy="241" r="7" fill="#1a1a1a" stroke="#d4a958" stroke-width="1"/>
+            <circle cx="368" cy="241" r="3" fill="#3a3a3a"/>
+            <!-- Side handle -->
+            <rect x="288" y="235" width="8" height="15" fill="#2a2a2a"/>
+          </g>
+
+          <!-- Chandelier -->
+          <g opacity="0.9">
+            <line x1="430" y1="0" x2="430" y2="40" stroke="#d4a958" stroke-width="1"/>
+            <ellipse cx="430" cy="55" rx="35" ry="8" fill="none" stroke="#d4a958" stroke-width="1.5"/>
+            <circle cx="410" cy="60" r="4" fill="#ffd97a"/>
+            <circle cx="425" cy="62" r="4" fill="#ffd97a"/>
+            <circle cx="440" cy="62" r="4" fill="#ffd97a"/>
+            <circle cx="455" cy="60" r="4" fill="#ffd97a"/>
+          </g>
+        </g>
+
+        <!-- Heart frame outline (gold border) -->
+        <path d="M300 340 C 80 200, 40 100, 130 60 C 195 30, 260 70, 300 120 C 340 70, 405 30, 470 60 C 560 100, 520 200, 300 340 Z"
+              fill="none" stroke="#d4a958" stroke-width="4"/>
+        <path d="M300 340 C 80 200, 40 100, 130 60 C 195 30, 260 70, 300 120 C 340 70, 405 30, 470 60 C 560 100, 520 200, 300 340 Z"
+              fill="none" stroke="#f0c674" stroke-width="1.5" opacity="0.6"/>
+      </svg>
+
+      <div style="margin-top: 14px;">
+        <div class="marquee-tag">PRESENTING</div>
+        <h1 class="brand">MARC<span class="amp">'S</span> <em>magic</em> MOVIE MAKER</h1>
+      </div>
+    </div>
+    <div class="subline">— A DUAL-CHAMBER VIDEO STUDIO • EST. 2026 —</div>
+    <div class="film-strip">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </header>
+
+  <div class="section-switch">
+    <div class="tab active" data-section="cinema">
+      <div class="tab-visual"></div>
+      <div class="deco-frame"></div>
+      <div class="tab-content">
+        <div class="tnum">CHAMBER 01</div>
+        <div class="ttitle">CINEMA CREATOR</div>
+        <div class="tsub">Premium quality, mainstream models</div>
+      </div>
+    </div>
+    <div class="tab" data-section="nsfw">
+      <div class="tab-visual"></div>
+      <div class="deco-neon">★</div>
+      <div class="tab-content">
+        <div class="tnum">CHAMBER 02 — 18+</div>
+        <div class="ttitle">NSFW CREATOR</div>
+        <div class="tsub">Uncensored, no content filters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel active" id="panel-cinema">
+    <div class="section-hero">
+      <div class="cinema-hero-bg">
+        <div class="perf top"></div>
+        <div class="perf bottom"></div>
+      </div>
+      <div class="hero-content">
+        <div class="sec-num">01</div>
+        <div class="sec-text">
+          <h2>CINEMA CREATOR</h2>
+          <p>Premium image-to-video for branded content, promo, and storytelling.</p>
+          <span class="badge">★ FEATURE PRESENTATION ★</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-filter" id="cinema-filter"></div>
+    <div class="grid" id="cinema-models"></div>
+
+    <div class="studio" id="cinema-studio">
+      <div class="studio-header">
+        <div>
+          <div class="label">NOW LOADED</div>
+          <div class="selected-model" id="cinema-selected-name">Select a model above</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Prompt <span class="req">*</span></label>
+        <textarea id="cinema-prompt" placeholder="Describe the motion, atmosphere, and feel. e.g. 'Slow cinematic zoom, warm golden hour light spilling across the figure, soft particles drifting through air.'"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Source Image <span class="req">*</span></label>
+        <label class="upload-zone" id="cinema-upload">
+          <div class="ic">+ UPLOAD</div>
+          <div class="hint">Click or drag to load source frame</div>
+          <input type="file" accept="image/*" id="cinema-file" />
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label class="field-label">Resolution</label>
+          <select id="cinema-res">
+            <option value="720p">720p</option>
+            <option value="1080p" selected>1080p</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Duration (sec)</label>
+          <select id="cinema-dur">
+            <option value="3">3</option>
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Negative Prompt</label>
+        <input type="text" id="cinema-neg" placeholder="Optional — things to avoid in the output" />
+      </div>
+
+      <div class="estimate">
+        <div>
+          <div class="est-label">EST. COST</div>
+          <div class="est-amt"><span class="pre">$</span><span id="cinema-cost">0.350</span></div>
+        </div>
+        <div class="breakdown" id="cinema-breakdown">5 sec × $0.070/sec</div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="resetPanel('cinema')">RESET</button>
+        <button class="btn btn-primary" id="cinema-run" onclick="generate('cinema')">RUN GENERATION</button>
+      </div>
+
+      <div class="output" id="cinema-output">
+        <div class="out-label">GENERATION</div>
+        <div class="status-line" id="cinema-status">Ready.</div>
+        <video id="cinema-video" controls style="display:none;"></video>
+        <div id="cinema-download"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-nsfw">
+    <div class="section-hero">
+      <div class="nsfw-hero-bg"></div>
+      <div class="hero-content">
+        <div class="sec-num">02</div>
+        <div class="sec-text">
+          <h2>NSFW CREATOR</h2>
+          <p>Uncensored models, no content filters. Verified adult use only.</p>
+          <span class="badge">⚠ 18+ ONLY ⚠</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-filter" id="nsfw-filter"></div>
+    <div class="grid" id="nsfw-models"></div>
+
+    <div class="studio" id="nsfw-studio">
+      <div class="studio-header">
+        <div>
+          <div class="label">NOW LOADED</div>
+          <div class="selected-model" id="nsfw-selected-name">Select a model above</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Prompt <span class="req">*</span></label>
+        <textarea id="nsfw-prompt" placeholder="Describe the scene, motion, and styling."></textarea>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Source Image <span class="req">*</span></label>
+        <label class="upload-zone" id="nsfw-upload">
+          <div class="ic">+ UPLOAD</div>
+          <div class="hint">Click or drag to load source frame</div>
+          <input type="file" accept="image/*" id="nsfw-file" />
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label class="field-label">Resolution</label>
+          <select id="nsfw-res">
+            <option value="480p">480p</option>
+            <option value="720p" selected>720p</option>
+            <option value="1080p">1080p</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Duration (sec)</label>
+          <select id="nsfw-dur">
+            <option value="3">3</option>
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="estimate">
+        <div>
+          <div class="est-label">EST. COST</div>
+          <div class="est-amt"><span class="pre">$</span><span id="nsfw-cost">0.225</span></div>
+        </div>
+        <div class="breakdown" id="nsfw-breakdown">5 sec × $0.045/sec</div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="resetPanel('nsfw')">RESET</button>
+        <button class="btn btn-primary" id="nsfw-run" onclick="generate('nsfw')">RUN GENERATION</button>
+      </div>
+
+      <div class="output" id="nsfw-output">
+        <div class="out-label">GENERATION</div>
+        <div class="status-line" id="nsfw-status">Ready.</div>
+        <video id="nsfw-video" controls style="display:none;"></video>
+        <div id="nsfw-download"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="foot-divider">
+      <span></span>
+      <div class="star">✦</div>
+      <span></span>
+    </div>
+    MARC'S MAGIC MOVIE MAKER · POWERED BY ATLAS CLOUD API · NETLIFY PROXY
+  </footer>
+
+</div>
+
+<div class="age-gate" id="ageGate">
+  <div class="age-gate-card">
+    <div class="age-title">⚠ ADULT CONTENT — 18+</div>
+    <p>This section produces uncensored adult content. By continuing you confirm you are 18 or older and that the content is for legal, ethical, consensual use only.</p>
+    <div class="age-gate-actions">
+      <button class="btn btn-secondary" onclick="declineAge()">EXIT</button>
+      <button class="btn btn-primary" onclick="confirmAge()">I AM 18+</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Each model has an `apiModel` string — the exact identifier Atlas Cloud expects.
+  // If a model 404s, check the Atlas Cloud model page and update the apiModel string here.
+
+  // Categories: 'generate' (i2v/t2v), 'edit' (v2v editing), 'swap' (head/face/character swap),
+  // 'motion' (motion presets: dance, kiss, etc), 'audio' (lip-sync, audio-driven)
+
+  const CINEMA_MODELS = [
+    // === GENERATE ===
+    { category: 'generate', id: 'wan-2.5-i2v', apiModel: 'alibaba/wan-2.5/image-to-video', name: 'Wan 2.5 Image-to-Video', tag: 'i2v • ALIBABA', desc: 'Strong motion + lighting. The current price-to-quality sweet spot.', price: 0.035, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['1080P', '5-10s'] },
+    { category: 'generate', id: 'wan-2.5-i2v-fast', apiModel: 'alibaba/wan-2.5-fast/image-to-video', name: 'Wan 2.5 Fast', tag: 'i2v • ALIBABA', desc: 'Speed-optimized. Great for iteration and batch testing.', price: 0.025, ribbon: null, specs: ['720P', 'FAST'] },
+    { category: 'generate', id: 'kling-v2', apiModel: 'kling-v2.0', name: 'Kling v2.0 Pro', tag: 'i2v • KUAISHOU', desc: 'Premium camera control, smooth motion, strong physical realism.', price: 0.085, ribbon: null, specs: ['1080P', '10s', 'PRO'] },
+    { category: 'generate', id: 'veo-3.1-i2v', apiModel: 'google/veo3.1/image-to-video', name: 'Veo 3.1 Image-to-Video', tag: 'i2v • GOOGLE', desc: 'Google\'s latest. Native audio generation, cinematic camera moves.', price: 0.090, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'AUDIO', 'PREMIUM'] },
+    { category: 'generate', id: 'seedance-2-fast', apiModel: 'bytedance/seedance-2.0-fast/image-to-video', name: 'Seedance 2.0 Fast', tag: 'i2v • BYTEDANCE', desc: '~3x faster, ~91% cost savings. Great for iteration.', price: 0.022, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['720P', 'FAST', 'VALUE'] },
+    { category: 'generate', id: 'seedance-2', apiModel: 'bytedance/seedance-2.0/image-to-video', name: 'Seedance 2.0 Standard', tag: 'i2v • BYTEDANCE', desc: 'Highest quality, refined motion.', price: 0.100, ribbon: null, specs: ['1080P', 'PRO'] },
+    { category: 'generate', id: 'vidu-q3-pro', apiModel: 'vidu/q3-pro/image-to-video', name: 'Vidu Q3-Pro I2V', tag: 'i2v • VIDU', desc: 'High-fidelity cinematic aesthetics, strong style consistency.', price: 0.080, ribbon: null, specs: ['1080P', 'CINEMATIC'] },
+    { category: 'generate', id: 'minimax-hailuo', apiModel: 'minimax/hailuo-02/image-to-video', name: 'MiniMax Hailuo 02', tag: 'i2v • MINIMAX', desc: 'Excellent prompt adherence, dynamic motion. Strong value pick.', price: 0.040, ribbon: null, specs: ['1080P', '6s'] },
+
+    // === EDIT (video-to-video) ===
+    { category: 'edit', id: 'runway-aleph', apiModel: 'runway/aleph', name: 'Runway Aleph', tag: 'v2v • RUNWAY', desc: 'In-context video editing. Change lighting, weather, time of day, or style with text.', price: 0.110, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'EDIT', 'STYLE'] },
+    { category: 'edit', id: 'wan-2.5-edit', apiModel: 'alibaba/wan-2.5/video-edit', name: 'Wan 2.5 Video-Edit', tag: 'v2v • ALIBABA', desc: 'Text-instruction video editing with reference image + style transfer.', price: 0.045, ribbon: null, specs: ['1080P', 'EDIT'] },
+    { category: 'edit', id: 'seedance-edit', apiModel: 'bytedance/seedance-edit', name: 'Seedance Edit', tag: 'v2v • BYTEDANCE', desc: 'Targeted edits: object removal, scene swaps, costume changes.', price: 0.055, ribbon: null, specs: ['1080P', 'EDIT'] },
+
+    // === SWAP (face / head / character) ===
+    { category: 'swap', id: 'viggle-jst', apiModel: 'viggle/jst-1/body-swap', name: 'Viggle JST-1 Body Swap', tag: 'swap • VIGGLE', desc: 'Full body + face swap into any video. 3D-aware, handles complex motion.', price: 0.010, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['720P', 'FULL BODY', '$0.01/SEC'] },
+    { category: 'swap', id: 'wan-animate', apiModel: 'alibaba/wan-animate/character-swap', name: 'Wan Animate', tag: 'swap • ALIBABA', desc: 'Character replacement in realistic footage. Strong on faces.', price: 0.038, ribbon: null, specs: ['1080P', 'CHARACTER'] },
+    { category: 'swap', id: 'face-swap-pro', apiModel: 'roop/face-swap-pro', name: 'Face Swap Pro', tag: 'swap • CINEMATIC', desc: 'Face-only swap. Best for headshots, talking heads, and dialogue scenes.', price: 0.015, ribbon: null, specs: ['1080P', 'FACE ONLY'] },
+
+    // === MOTION PRESETS ===
+    { category: 'motion', id: 'viggle-template', apiModel: 'viggle/template-motion', name: 'Viggle Motion Templates', tag: 'motion • VIGGLE', desc: '8,000+ motion templates: dances, sports, anime fights, viral memes.', price: 0.010, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['TEMPLATES', 'VIRAL'] },
+    { category: 'motion', id: 'wan-pose', apiModel: 'alibaba/wan-pose-driven', name: 'Wan Pose-Driven', tag: 'motion • ALIBABA', desc: 'Drive your character with any pose sequence or skeleton.', price: 0.035, ribbon: null, specs: ['1080P', 'POSE'] },
+
+    // === AUDIO / LIP-SYNC ===
+    { category: 'audio', id: 'wan-2.7-audio', apiModel: 'alibaba/wan-2.7/audio-driven', name: 'Wan 2.7 Audio-Driven', tag: 'audio • ALIBABA', desc: 'Drive lip-sync + facial motion from any audio track. Perfect for dubbing.', price: 0.050, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'LIP SYNC'] },
+    { category: 'audio', id: 'sync-labs', apiModel: 'sync-labs/lip-sync-2', name: 'Sync Labs Lip-Sync', tag: 'audio • SYNC', desc: 'Industry-standard lip sync. Handles multi-language dubbing.', price: 0.040, ribbon: null, specs: ['1080P', 'LIP SYNC'] }
+  ];
+
+  const NSFW_MODELS = [
+    // === GENERATE (uncensored) ===
+    { category: 'generate', id: 'wan-2.6-spicy', apiModel: 'alibaba/wan-2.6-spicy/image-to-video', name: 'Wan 2.6 I2V Spicy', tag: 'i2v • UNCENSORED', desc: 'Wan 2.6 with content filters removed. Multi-shot 1080p, character consistency.', price: 0.070, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['1080P', 'UNFILTERED', 'MULTI-SHOT'] },
+    { category: 'generate', id: 'wan-2.7-spicy', apiModel: 'alibaba/wan-2.7-spicy/image-to-video', name: 'Wan 2.7 I2V Spicy', tag: 'i2v • UNCENSORED', desc: 'Latest Wan, no filters. First-frame / last-frame / continuation modes.', price: 0.045, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'UNFILTERED', 'AUDIO'] },
+    { category: 'generate', id: 'wan-2.2-spicy', apiModel: 'alibaba/wan-2.2-spicy/image-to-video', name: 'Wan 2.2 Spicy + LoRA', tag: 'i2v • LORA-READY', desc: 'Character-driven. Supports custom LoRA for personalized styles.', price: 0.025, ribbon: null, specs: ['720P', 'LORA', 'MULTI-SUBJ'] },
+    { category: 'generate', id: 'wan-2.2-turbo-spicy', apiModel: 'alibaba/wan-2.2-turbo-spicy/image-to-video', name: 'Wan 2.2 Turbo Spicy', tag: 'i2v • BUDGET', desc: 'Cheapest uncensored option. Great for rapid iteration.', price: 0.010, ribbon: null, specs: ['480P', 'BUDGET'] },
+    { category: 'generate', id: 'seedance-spicy', apiModel: 'bytedance/seedance-v1.5-spicy/image-to-video', name: 'Seedance v1.5 Spicy', tag: 'i2v • UNCENSORED', desc: 'Seedance quality with filters removed. Supports custom LoRA.', price: 0.049, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['1080P', 'LORA'] },
+
+    // === EDIT ===
+    { category: 'edit', id: 'wan-2.7-edit-spicy', apiModel: 'alibaba/wan-2.7-spicy/video-edit', name: 'Wan 2.7 Video-Edit Spicy', tag: 'v2v • UNCENSORED', desc: 'Edit any video with text instructions + reference image. No content filters.', price: 0.038, ribbon: null, specs: ['1080P', 'EDIT'] },
+    { category: 'edit', id: 'wan-2.7-ref2vid-spicy', apiModel: 'alibaba/wan-2.7-spicy/reference-to-video', name: 'Wan 2.7 Reference-to-Video', tag: 'r2v • UNCENSORED', desc: 'Multi-subject character-driven with voice cloning. Long-form capable.', price: 0.040, ribbon: null, specs: ['1080P', 'VOICE', 'LONG-FORM'] },
+
+    // === SWAP ===
+    { category: 'swap', id: 'viggle-jst-spicy', apiModel: 'viggle/jst-1-uncensored/body-swap', name: 'Viggle Body Swap (Uncensored)', tag: 'swap • VIGGLE', desc: 'Full body swap into any video, no content restrictions. 3D-aware motion.', price: 0.012, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['720P', 'FULL BODY', 'BUDGET'] },
+    { category: 'swap', id: 'wan-animate-spicy', apiModel: 'alibaba/wan-animate-spicy/character-swap', name: 'Wan Animate Spicy', tag: 'swap • UNCENSORED', desc: 'Full character replacement with uncensored content support.', price: 0.040, ribbon: null, specs: ['1080P', 'CHARACTER'] },
+    { category: 'swap', id: 'face-swap-spicy', apiModel: 'roop/face-swap-uncensored', name: 'Face Swap (Uncensored)', tag: 'swap • FACE', desc: 'Face-only swap with no content filtering.', price: 0.015, ribbon: null, specs: ['1080P', 'FACE ONLY'] },
+
+    // === MOTION PRESETS ===
+    { category: 'motion', id: 'viggle-spicy-templates', apiModel: 'viggle/uncensored-templates', name: 'Spicy Motion Templates', tag: 'motion • TEMPLATES', desc: 'Curated motion presets: dance, twerk, pole, walks, kiss cam. Templates only — your character.', price: 0.012, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['TEMPLATES', 'DANCE', 'KISS CAM'] },
+    { category: 'motion', id: 'wan-pose-spicy', apiModel: 'alibaba/wan-pose-spicy', name: 'Wan Pose-Driven Spicy', tag: 'motion • POSE', desc: 'Drive your character with custom pose sequences. Full motion control.', price: 0.035, ribbon: null, specs: ['1080P', 'POSE'] },
+    { category: 'motion', id: 'dance-preset-pack', apiModel: 'community/dance-pack-v1', name: 'Trending Dance Pack', tag: 'motion • TRENDING', desc: 'Latest viral choreo — TikTok dances, club moves, performance routines.', price: 0.015, ribbon: null, specs: ['VIRAL', 'CHOREO'] },
+
+    // === AUDIO ===
+    { category: 'audio', id: 'wan-2.7-audio-spicy', apiModel: 'alibaba/wan-2.7-spicy/audio-driven', name: 'Wan 2.7 Audio-Driven Spicy', tag: 'audio • UNCENSORED', desc: 'Drive lip-sync + facial motion from any audio. Uncensored variant.', price: 0.050, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'LIP SYNC'] }
+  ];
+
+  const CATEGORIES = [
+    { key: 'all', label: 'All' },
+    { key: 'generate', label: 'Generate' },
+    { key: 'edit', label: 'Edit' },
+    { key: 'swap', label: 'Swap' },
+    { key: 'motion', label: 'Motion' },
+    { key: 'audio', label: 'Audio' }
+  ];
+
+  const state = {
+    cinema: { model: CINEMA_MODELS[0], image: null, imageFile: null, category: 'all' },
+    nsfw: { model: NSFW_MODELS[0], image: null, imageFile: null, category: 'all' }
+  };
+
+  function renderFilter(section, models, containerId) {
+    const c = document.getElementById(`${section}-filter`);
+    c.innerHTML = '';
+    CATEGORIES.forEach(cat => {
+      const count = cat.key === 'all' ? models.length : models.filter(m => m.category === cat.key).length;
+      if (count === 0 && cat.key !== 'all') return;
+      const chip = document.createElement('div');
+      chip.className = 'cat-chip' + (state[section].category === cat.key ? ' active' : '');
+      chip.innerHTML = `${cat.label}<span class="count">${count}</span>`;
+      chip.onclick = () => {
+        state[section].category = cat.key;
+        renderFilter(section, models, containerId);
+        renderModels(section, models, containerId);
+      };
+      c.appendChild(chip);
+    });
+  }
+
+  function renderModels(section, models, containerId) {
+    const c = document.getElementById(containerId);
+    c.innerHTML = '';
+    const cat = state[section].category;
+    const filtered = cat === 'all' ? models : models.filter(m => m.category === cat);
+    filtered.forEach((m) => {
+      const card = document.createElement('div');
+      card.className = 'model-card' + (m.id === state[section].model.id ? ' selected' : '');
+      card.dataset.id = m.id;
+      card.innerHTML = `
+        ${m.ribbon ? `<div class="ribbon ${m.ribbon.cls}">${m.ribbon.text}</div>` : ''}
+        <div class="mtag">${m.tag}</div>
+        <h3>${m.name}</h3>
+        <div class="desc">${m.desc}</div>
+        <div class="specs">${m.specs.map(s => `<span>${s}</span>`).join('')}</div>
+        <div class="price">
+          <div class="amt"><span class="currency">$</span>${m.price.toFixed(3)}</div>
+          <div class="unit">/SEC</div>
+        </div>
+      `;
+      card.onclick = () => {
+        state[section].model = m;
+        document.querySelectorAll(`#${containerId} .model-card`).forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        document.getElementById(`${section}-selected-name`).textContent = m.name;
+        updateCost(section);
+      };
+      c.appendChild(card);
+    });
+    document.getElementById(`${section}-selected-name`).textContent = state[section].model.name;
+  }
+
+  function updateCost(section) {
+    const dur = parseFloat(document.getElementById(`${section}-dur`).value);
+    const price = state[section].model.price;
+    const total = (dur * price).toFixed(3);
+    document.getElementById(`${section}-cost`).textContent = total;
+    document.getElementById(`${section}-breakdown`).textContent = `${dur} sec × $${price.toFixed(3)}/sec`;
+  }
+
+  function setupUpload(section) {
+    const input = document.getElementById(`${section}-file`);
+    const zone = document.getElementById(`${section}-upload`);
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      state[section].imageFile = file;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        state[section].image = ev.target.result;
+        zone.innerHTML = `<img src="${ev.target.result}" alt="source" />`;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.onclick = () => {
+      const section = tab.dataset.section;
+      if (section === 'nsfw' && !sessionStorage.getItem('age_ok')) {
+        document.getElementById('ageGate').classList.add('show');
+        return;
+      }
+      switchTo(section);
+    };
+  });
+
+  function switchTo(section) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.section === section));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${section}`));
+  }
+
+  function confirmAge() {
+    sessionStorage.setItem('age_ok', '1');
+    document.getElementById('ageGate').classList.remove('show');
+    switchTo('nsfw');
+  }
+  function declineAge() {
+    document.getElementById('ageGate').classList.remove('show');
+  }
+
+  function resetPanel(section) {
+    document.getElementById(`${section}-prompt`).value = '';
+    if (document.getElementById(`${section}-neg`)) document.getElementById(`${section}-neg`).value = '';
+    document.getElementById(`${section}-file`).value = '';
+    state[section].image = null;
+    state[section].imageFile = null;
+    document.getElementById(`${section}-upload`).innerHTML = `
+      <div class="ic">+ UPLOAD</div>
+      <div class="hint">Click or drag to load source frame</div>
+      <input type="file" accept="image/*" id="${section}-file" />
+    `;
+    setupUpload(section);
+    document.getElementById(`${section}-output`).classList.remove('show');
+    document.getElementById(`${section}-video`).style.display = 'none';
+    document.getElementById(`${section}-download`).innerHTML = '';
+  }
+
+  // ========== REAL API CALLS via Netlify Functions ==========
+
+  function setStatus(section, text, kind) {
+    const el = document.getElementById(`${section}-status`);
+    el.className = 'status-line' + (kind ? ' ' + kind : '');
+    el.innerHTML = (kind === 'pending' ? '<span class="spinner"></span>' : '') + text;
+  }
+
+  function showOutput(section) {
+    document.getElementById(`${section}-output`).classList.add('show');
+    document.getElementById(`${section}-output`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function uploadImage(section) {
+    setStatus(section, 'Uploading source image...', 'pending');
+    const res = await fetch('/.netlify/functions/upload-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        image_base64: state[section].image,
+        filename: state[section].imageFile?.name || 'source.png'
+      })
+    });
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = { raw: text }; }
+    if (!res.ok) throw new Error(data.error || data.raw || `Upload failed (${res.status})`);
+    const url = data.data?.download_url || data.download_url || data.data?.url || data.url;
+    if (!url) throw new Error('Upload OK but no URL in response: ' + JSON.stringify(data).substring(0, 200));
+    return url;
+  }
+
+  async function submitGeneration(section, imageUrl) {
+    setStatus(section, 'Submitting generation request...', 'pending');
+    const m = state[section].model;
+    const prompt = document.getElementById(`${section}-prompt`).value.trim();
+    const resolution = document.getElementById(`${section}-res`).value;
+    const duration = parseInt(document.getElementById(`${section}-dur`).value);
+
+    // Atlas Cloud accepts width/height/duration/fps + image URL.
+    // Resolution mapping is approximate — different models may want exact width/height.
+    const resMap = { '480p': { width: 854, height: 480 }, '720p': { width: 1280, height: 720 }, '1080p': { width: 1920, height: 1080 } };
+    const dims = resMap[resolution] || resMap['720p'];
+
+    const body = {
+      model: m.apiModel,
+      prompt: prompt,
+      image: imageUrl,
+      width: dims.width,
+      height: dims.height,
+      duration: duration,
+      fps: 24
+    };
+    if (section === 'cinema') {
+      const neg = document.getElementById('cinema-neg').value.trim();
+      if (neg) body.negative_prompt = neg;
+    }
+
+    const res = await fetch('/.netlify/functions/generate-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.data?.error || `Submit failed (${res.status})`);
+    const id = data.data?.id || data.id;
+    if (!id) throw new Error('No prediction ID returned');
+    return id;
+  }
+
+  async function pollStatus(section, predictionId) {
+    const maxAttempts = 100; // ~8 min at 5s intervals
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise(r => setTimeout(r, 5000));
+      const res = await fetch(`/.netlify/functions/check-status?id=${encodeURIComponent(predictionId)}`);
+      const data = await res.json();
+      const d = data.data || data;
+      const status = d.status;
+      setStatus(section, `Status: ${status || 'processing'}... (${i + 1}/${maxAttempts})`, 'pending');
+      if (status === 'completed' || status === 'succeeded') {
+        const url = d.outputs?.[0];
+        if (!url) throw new Error('Completed but no output URL');
+        return url;
+      }
+      if (status === 'failed' || status === 'error') {
+        throw new Error(d.error || 'Generation failed');
+      }
+    }
+    throw new Error('Timed out waiting for generation');
+  }
+
+  async function generate(section) {
+    const prompt = document.getElementById(`${section}-prompt`).value.trim();
+    if (!prompt) { alert('Add a prompt first.'); return; }
+    if (!state[section].image) { alert('Upload a source image first.'); return; }
+
+    const btn = document.getElementById(`${section}-run`);
+    btn.disabled = true;
+    document.getElementById(`${section}-video`).style.display = 'none';
+    document.getElementById(`${section}-download`).innerHTML = '';
+    showOutput(section);
+
+    try {
+      const imageUrl = await uploadImage(section);
+      const predId = await submitGeneration(section, imageUrl);
+      setStatus(section, `Submitted (id: ${predId}). Polling for result...`, 'pending');
+      const videoUrl = await pollStatus(section, predId);
+      setStatus(section, '✓ Generation complete.', 'ok');
+      const v = document.getElementById(`${section}-video`);
+      v.src = videoUrl;
+      v.style.display = 'block';
+      document.getElementById(`${section}-download`).innerHTML =
+        `<a class="dl-btn" href="${videoUrl}" download target="_blank">DOWNLOAD MP4</a>`;
+    } catch (err) {
+      setStatus(section, '✗ ' + err.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  renderFilter('cinema', CINEMA_MODELS, 'cinema-models');
+  renderFilter('nsfw', NSFW_MODELS, 'nsfw-models');
+  renderModels('cinema', CINEMA_MODELS, 'cinema-models');
+  renderModels('nsfw', NSFW_MODELS, 'nsfw-models');
+  setupUpload('cinema');
+  setupUpload('nsfw');
+  document.getElementById('cinema-dur').addEventListener('change', () => updateCost('cinema'));
+  document.getElementById('nsfw-dur').addEventListener('change', () => updateCost('nsfw'));
+  updateCost('cinema');
+  updateCost('nsfw');
+</script>
+
+</body>
+</html>
