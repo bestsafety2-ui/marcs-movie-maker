@@ -556,6 +556,32 @@
   #panel-nsfw .upload-zone:hover { border-color: var(--accent-nsfw); }
   .upload-zone .ic { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--ink-dim); }
   .upload-zone .hint { font-style: italic; font-size: 14px; color: var(--ink-dim); margin-top: 4px; }
+
+  .upload-zone .upload-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-dim);
+    margin-top: 4px;
+    letter-spacing: 0.1em;
+  }
+  .upload-confirm {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    padding: 8px;
+    text-align: center;
+  }
+  #panel-nsfw .upload-confirm { color: var(--crimson-bright); }
+  .field-toggle { display: flex; align-items: center; justify-content: space-between; flex-direction: row !important; gap: 12px; }
+  .toggle-wrap { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle-wrap input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 24px; transition: 0.3s; cursor: pointer; }
+  .toggle-slider::before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: var(--ink-dim); border-radius: 50%; transition: 0.3s; }
+  .toggle-wrap input:checked + .toggle-slider { background: var(--gold); }
+  .toggle-wrap input:checked + .toggle-slider::before { transform: translateX(20px); background: var(--bg); }
+  #panel-nsfw .toggle-wrap input:checked + .toggle-slider { background: var(--crimson); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 540px) { .field-row { grid-template-columns: 1fr; } }
   .upload-zone img { max-width: 100%; max-height: 200px; display: block; margin: 0 auto; }
   .upload-zone input { display: none; }
 
@@ -913,70 +939,7 @@
     <div class="grid" id="cinema-models"></div>
 
     <div class="studio" id="cinema-studio">
-      <div class="studio-header">
-        <div>
-          <div class="label">NOW LOADED</div>
-          <div class="selected-model" id="cinema-selected-name">Select a model above</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="field-label">Prompt <span class="req">*</span></label>
-        <textarea id="cinema-prompt" placeholder="Describe the motion, atmosphere, and feel. e.g. 'Slow cinematic zoom, warm golden hour light spilling across the figure, soft particles drifting through air.'"></textarea>
-      </div>
-
-      <div class="field">
-        <label class="field-label">Source Image <span class="req">*</span></label>
-        <label class="upload-zone" id="cinema-upload">
-          <div class="ic">+ UPLOAD</div>
-          <div class="hint">Click or drag to load source frame</div>
-          <input type="file" accept="image/*" id="cinema-file" />
-        </label>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label class="field-label">Resolution</label>
-          <select id="cinema-res">
-            <option value="720p">720p</option>
-            <option value="1080p" selected>1080p</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="field-label">Duration (sec)</label>
-          <select id="cinema-dur">
-            <option value="3">3</option>
-            <option value="5" selected>5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="field-label">Negative Prompt</label>
-        <input type="text" id="cinema-neg" placeholder="Optional — things to avoid in the output" />
-      </div>
-
-      <div class="estimate">
-        <div>
-          <div class="est-label">EST. COST</div>
-          <div class="est-amt"><span class="pre">$</span><span id="cinema-cost">0.350</span></div>
-        </div>
-        <div class="breakdown" id="cinema-breakdown">5 sec × $0.070/sec</div>
-      </div>
-
-      <div class="actions">
-        <button class="btn btn-secondary" onclick="resetPanel('cinema')">RESET</button>
-        <button class="btn btn-primary" id="cinema-run" onclick="generate('cinema')">RUN GENERATION</button>
-      </div>
-
-      <div class="output" id="cinema-output">
-        <div class="out-label">GENERATION</div>
-        <div class="status-line" id="cinema-status">Ready.</div>
-        <video id="cinema-video" controls style="display:none;"></video>
-        <div id="cinema-download"></div>
-      </div>
+      <!-- Dynamically rendered by renderStudio('cinema') -->
     </div>
   </div>
 
@@ -997,65 +960,7 @@
     <div class="grid" id="nsfw-models"></div>
 
     <div class="studio" id="nsfw-studio">
-      <div class="studio-header">
-        <div>
-          <div class="label">NOW LOADED</div>
-          <div class="selected-model" id="nsfw-selected-name">Select a model above</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="field-label">Prompt <span class="req">*</span></label>
-        <textarea id="nsfw-prompt" placeholder="Describe the scene, motion, and styling."></textarea>
-      </div>
-
-      <div class="field">
-        <label class="field-label">Source Image <span class="req">*</span></label>
-        <label class="upload-zone" id="nsfw-upload">
-          <div class="ic">+ UPLOAD</div>
-          <div class="hint">Click or drag to load source frame</div>
-          <input type="file" accept="image/*" id="nsfw-file" />
-        </label>
-      </div>
-
-      <div class="row">
-        <div class="field">
-          <label class="field-label">Resolution</label>
-          <select id="nsfw-res">
-            <option value="480p">480p</option>
-            <option value="720p" selected>720p</option>
-            <option value="1080p">1080p</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="field-label">Duration (sec)</label>
-          <select id="nsfw-dur">
-            <option value="3">3</option>
-            <option value="5" selected>5</option>
-            <option value="10">10</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="estimate">
-        <div>
-          <div class="est-label">EST. COST</div>
-          <div class="est-amt"><span class="pre">$</span><span id="nsfw-cost">0.225</span></div>
-        </div>
-        <div class="breakdown" id="nsfw-breakdown">5 sec × $0.045/sec</div>
-      </div>
-
-      <div class="actions">
-        <button class="btn btn-secondary" onclick="resetPanel('nsfw')">RESET</button>
-        <button class="btn btn-primary" id="nsfw-run" onclick="generate('nsfw')">RUN GENERATION</button>
-      </div>
-
-      <div class="output" id="nsfw-output">
-        <div class="out-label">GENERATION</div>
-        <div class="status-line" id="nsfw-status">Ready.</div>
-        <video id="nsfw-video" controls style="display:none;"></video>
-        <div id="nsfw-download"></div>
-      </div>
+      <!-- Dynamically rendered by renderStudio('nsfw') -->
     </div>
   </div>
 
@@ -1088,80 +993,833 @@
   // Categories: 'generate' (i2v/t2v), 'edit' (v2v editing), 'swap' (head/face/character swap),
   // 'motion' (motion presets: dance, kiss, etc), 'audio' (lip-sync, audio-driven)
 
+  // ============================================================
+  // MODEL INPUT SCHEMA SYSTEM
+  // Each model defines exactly what inputs it needs.
+  // Field types: prompt, neg-prompt, image, video, audio, 
+  //              multi-image, lora-url, resolution, duration,
+  //              select, toggle, number, prompts-array
+  // ============================================================
+
   const CINEMA_MODELS = [
     // === GENERATE ===
-    { category: 'generate', id: 'wan-2.5-i2v', apiModel: 'alibaba/wan-2.5/image-to-video', name: 'Wan 2.5 Image-to-Video', tag: 'i2v • ALIBABA', desc: 'Strong motion + lighting. The current price-to-quality sweet spot.', price: 0.035, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['1080P', '5-10s'] },
-    { category: 'generate', id: 'wan-2.5-i2v-fast', apiModel: 'alibaba/wan-2.5-fast/image-to-video', name: 'Wan 2.5 Fast', tag: 'i2v • ALIBABA', desc: 'Speed-optimized. Great for iteration and batch testing.', price: 0.025, ribbon: null, specs: ['720P', 'FAST'] },
-    { category: 'generate', id: 'kling-v2', apiModel: 'kling-v2.0', name: 'Kling v2.0 Pro', tag: 'i2v • KUAISHOU', desc: 'Premium camera control, smooth motion, strong physical realism.', price: 0.085, ribbon: null, specs: ['1080P', '10s', 'PRO'] },
-    { category: 'generate', id: 'veo-3.1-i2v', apiModel: 'google/veo3.1/image-to-video', name: 'Veo 3.1 Image-to-Video', tag: 'i2v • GOOGLE', desc: 'Google\'s latest. Native audio generation, cinematic camera moves.', price: 0.090, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'AUDIO', 'PREMIUM'] },
-    { category: 'generate', id: 'seedance-2-fast', apiModel: 'bytedance/seedance-2.0-fast/image-to-video', name: 'Seedance 2.0 Fast', tag: 'i2v • BYTEDANCE', desc: '~3x faster, ~91% cost savings. Great for iteration.', price: 0.022, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['720P', 'FAST', 'VALUE'] },
-    { category: 'generate', id: 'seedance-2', apiModel: 'bytedance/seedance-2.0/image-to-video', name: 'Seedance 2.0 Standard', tag: 'i2v • BYTEDANCE', desc: 'Highest quality, refined motion.', price: 0.100, ribbon: null, specs: ['1080P', 'PRO'] },
-    { category: 'generate', id: 'vidu-q3-pro', apiModel: 'vidu/q3-pro/image-to-video', name: 'Vidu Q3-Pro I2V', tag: 'i2v • VIDU', desc: 'High-fidelity cinematic aesthetics, strong style consistency.', price: 0.080, ribbon: null, specs: ['1080P', 'CINEMATIC'] },
-    { category: 'generate', id: 'minimax-hailuo', apiModel: 'minimax/hailuo-02/image-to-video', name: 'MiniMax Hailuo 02', tag: 'i2v • MINIMAX', desc: 'Excellent prompt adherence, dynamic motion. Strong value pick.', price: 0.040, ribbon: null, specs: ['1080P', '6s'] },
+    {
+      category: 'generate', id: 'wan-2.6-flash', apiModel: 'alibaba/wan-2.6/image-to-video-flash',
+      name: 'Wan 2.6 Flash', tag: 'i2v • ALIBABA',
+      desc: 'Budget workhorse. Fast, low-latency I2V. Great for iteration and batch work.',
+      price: 0.018, maxDur: 10, ribbon: { text: 'CHEAPEST', cls: 'new' },
+      specs: ['480P-1080P', 'UP TO 10s', '$0.018/SEC'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true, hint: 'Describe the motion and scene.' },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 10 },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'generate_audio', type: 'toggle', label: 'Generate Audio', default: true },
+        { key: 'enable_prompt_expansion', type: 'toggle', label: 'Prompt Expansion', default: false },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'wan-2.5-i2v', apiModel: 'alibaba/wan-2.5/image-to-video',
+      name: 'Wan 2.5 Image-to-Video', tag: 'i2v • ALIBABA',
+      desc: 'Stable motion, native audio sync. Solid mid-tier. Supports audio file input.',
+      price: 0.035, maxDur: 10, ribbon: null,
+      specs: ['480P-1080P', 'UP TO 10s', 'AUDIO'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 10 },
+        { key: 'audio', type: 'audio', label: 'Audio File (optional)', hint: 'Upload audio to sync with video motion.' },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'generate_audio', type: 'toggle', label: 'Generate Audio', default: true },
+        { key: 'enable_prompt_expansion', type: 'toggle', label: 'Prompt Expansion', default: false },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'wan-2.6-i2v', apiModel: 'alibaba/wan-2.6/image-to-video',
+      name: 'Wan 2.6 Image-to-Video', tag: 'i2v • ALIBABA',
+      desc: 'Multi-shot 1080p. Native audio/video sync. Optional multi-shot mode.',
+      price: 0.070, maxDur: 15, ribbon: null,
+      specs: ['720P-1080P', 'UP TO 15s', 'AUDIO', 'MULTI-SHOT'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true, hint: 'For multi-shot: separate shots with a newline.' },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 15 },
+        { key: 'shot_type', type: 'select', label: 'Shot Type', options: ['single','multi'], default: 'single', hint: '"multi" enables multi-shot storytelling.' },
+        { key: 'audio', type: 'audio', label: 'Audio File (optional)' },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'generate_audio', type: 'toggle', label: 'Generate Audio', default: true },
+        { key: 'enable_prompt_expansion', type: 'toggle', label: 'Prompt Expansion', default: false },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'wan-2.7-i2v', apiModel: 'alibaba/wan-2.7/image-to-video',
+      name: 'Wan 2.7 Image-to-Video', tag: 'i2v • ALIBABA',
+      desc: 'Four modes: first-frame (upload image), first+last frame (upload image + last_image), video continuation (upload video), audio-driven (upload audio). Leave unused inputs empty.',
+      price: 0.100, maxDur: 15, ribbon: { text: 'NEW', cls: 'new' },
+      specs: ['720P-1080P', '2–15s', '4 MODES', 'AUDIO'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'First Frame Image', required: false, hint: 'First-frame mode: provide this image.' },
+        { key: 'last_image', type: 'image', label: 'Last Frame Image (optional)', required: false, hint: 'First+last frame mode: provide both.' },
+        { key: 'video', type: 'video', label: 'Source Video (optional)', hint: 'Continuation mode: provide a video to continue.' },
+        { key: 'audio', type: 'audio', label: 'Audio File (optional)', hint: 'Audio-driven mode: the motion follows this audio.' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 15, min: 2 },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'enable_prompt_expansion', type: 'toggle', label: 'Prompt Expansion', default: false },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'seedance-v15', apiModel: 'bytedance/seedance-v1.5-pro/image-to-video',
+      name: 'Seedance v1.5 Pro', tag: 'i2v • BYTEDANCE',
+      desc: 'Multi-reference champion. Best value overall. Phoneme-level lip-sync in 8 languages.',
+      price: 0.047, maxDur: 12, ribbon: { text: 'BEST VALUE', cls: 'hot' },
+      specs: ['1080P', '4–12s', 'LIP-SYNC', 'MULTI-REF'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'First Frame', required: false },
+        { key: 'end_image', type: 'image', label: 'Last Frame (optional)' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 12, min: 4 },
+        { key: 'aspect_ratio', type: 'select', label: 'Aspect Ratio', options: ['16:9','9:16','1:1','4:3','3:4'], default: '16:9' },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'generate_audio', type: 'toggle', label: 'Generate Audio', default: true },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'kling-3-std', apiModel: 'kwaivgi/kling-v3.0-std/image-to-video',
+      name: 'Kling 3.0 Standard', tag: 'i2v • KUAISHOU',
+      desc: 'Strong character consistency, high 1080p fidelity. Best for brand and character animation.',
+      price: 0.071, maxDur: 15, ribbon: null,
+      specs: ['1080P', 'UP TO 15s', 'CONSISTENT'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'duration', type: 'duration', max: 15 },
+        { key: 'aspect_ratio', type: 'select', label: 'Aspect Ratio', options: ['16:9','9:16','1:1'], default: '16:9' },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'kling-3-pro', apiModel: 'kwaivgi/kling-v3.0-pro/image-to-video',
+      name: 'Kling 3.0 Pro', tag: 'i2v • KUAISHOU',
+      desc: 'Premium tier Kling. Maximum resolution + text preservation. Best for hero content.',
+      price: 0.095, maxDur: 15, ribbon: null,
+      specs: ['1080P', 'UP TO 15s', 'PRO'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'duration', type: 'duration', max: 15 },
+        { key: 'aspect_ratio', type: 'select', label: 'Aspect Ratio', options: ['16:9','9:16','1:1'], default: '16:9' },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'happyhorse', apiModel: 'alibaba/happyhorse-1.0/image-to-video',
+      name: 'HappyHorse 1.0', tag: 'i2v • ALIBABA ATH',
+      desc: '#1 on AI Video Arena Leaderboard. Built by ex-Kling team. 1080p with native audio in one pass.',
+      price: 0.140, maxDur: 15, ribbon: { text: '#1 RANKED', cls: 'hot' },
+      specs: ['720P-1080P', '3–15s', 'AUDIO', '#1 RANKED'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 15, min: 3 },
+        { key: 'audio', type: 'audio', label: 'Audio File (optional)' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'vidu-q3-pro', apiModel: 'vidu/q3-pro/image-to-video',
+      name: 'Vidu Q3 Pro', tag: 'i2v • SHENGSHU',
+      desc: 'Native audio built into I2V. Good style consistency. Max 8s.',
+      price: 0.060, maxDur: 8, ribbon: null,
+      specs: ['1080P', 'UP TO 8s', 'NATIVE AUDIO'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'duration', type: 'duration', max: 8, min: 4 },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'vidu-q3-turbo', apiModel: 'vidu/q3-turbo/image-to-video',
+      name: 'Vidu Q3 Turbo', tag: 'i2v • SHENGSHU',
+      desc: 'Budget I2V with native audio. Fast delivery. Max 8s.',
+      price: 0.034, maxDur: 8, ribbon: null,
+      specs: ['720P', 'UP TO 8s', 'AUDIO', 'BUDGET'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'duration', type: 'duration', max: 8, min: 4 },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'hailuo-2-3', apiModel: 'minimax/hailuo-2.3/image-to-video',
+      name: 'Hailuo 2.3', tag: 'i2v • MINIMAX',
+      desc: 'Strong motion and prompt adherence. 768p Standard or 1080p Pro tier. Up to 10s.',
+      price: 0.280, maxDur: 10, ribbon: null,
+      specs: ['768P-1080P', 'UP TO 10s'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'duration', type: 'duration', max: 10 },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
 
-    // === EDIT (video-to-video) ===
-    { category: 'edit', id: 'runway-aleph', apiModel: 'runway/aleph', name: 'Runway Aleph', tag: 'v2v • RUNWAY', desc: 'In-context video editing. Change lighting, weather, time of day, or style with text.', price: 0.110, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'EDIT', 'STYLE'] },
-    { category: 'edit', id: 'wan-2.5-edit', apiModel: 'alibaba/wan-2.5/video-edit', name: 'Wan 2.5 Video-Edit', tag: 'v2v • ALIBABA', desc: 'Text-instruction video editing with reference image + style transfer.', price: 0.045, ribbon: null, specs: ['1080P', 'EDIT'] },
-    { category: 'edit', id: 'seedance-edit', apiModel: 'bytedance/seedance-edit', name: 'Seedance Edit', tag: 'v2v • BYTEDANCE', desc: 'Targeted edits: object removal, scene swaps, costume changes.', price: 0.055, ribbon: null, specs: ['1080P', 'EDIT'] },
+    // === EDIT / SWAP ===
+    {
+      category: 'edit', id: 'wan-2.7-video-edit', apiModel: 'alibaba/wan-2.7/video-edit',
+      name: 'Wan 2.7 Video-Edit', tag: 'v2v • ALIBABA',
+      desc: 'Edit any video with a text instruction. Change style, swap objects, retime. Reference images guide the result.',
+      price: 0.100, maxDur: 15, ribbon: null,
+      specs: ['1080P', 'TEXT EDIT', 'MULTI-REF'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Edit Instruction', required: true, hint: 'e.g. "Change her outfit to a red dress"' },
+        { key: 'video', type: 'video', label: 'Source Video', required: true, hint: 'The video you want to edit.' },
+        { key: 'image', type: 'image', label: 'Reference Image (optional)', hint: 'Style or target reference.' },
+        { key: 'audio_mode', type: 'select', label: 'Audio Mode', options: ['auto','origin'], default: 'auto' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '720p' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'edit', id: 'wan-2.7-ref2vid', apiModel: 'alibaba/wan-2.7/reference-to-video',
+      name: 'Wan 2.7 Reference-to-Video', tag: 'r2v • ALIBABA',
+      desc: 'Multi-subject video from reference images. Use character1/character2 in prompt. Supports voice cloning via audio URL.',
+      price: 0.100, maxDur: 15, ribbon: null,
+      specs: ['1080P', '2–15s', 'VOICE CLONE', 'MULTI-SUBJECT'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true, hint: 'Use "character1" and "character2" to refer to your reference images.' },
+        { key: 'image', type: 'image', label: 'Reference Image 1 (character1)', required: true },
+        { key: 'image2', type: 'image', label: 'Reference Image 2 (character2) optional' },
+        { key: 'audio', type: 'audio', label: 'Voice Clone Audio (optional)', hint: 'Audio of the voice to clone into the video.' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 15, min: 2 },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'edit', id: 'wan-2.2-animate-mix', apiModel: 'alibaba/wan-2.2/animate-mix',
+      name: 'Wan 2.2 Animate Mix', tag: 'swap • ALIBABA',
+      desc: 'Video character swap. Upload a character image + a target video. AI replaces the character in the video with yours.',
+      price: 0.126, maxDur: 10, ribbon: null,
+      specs: ['1080P', 'CHARACTER SWAP'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Character Image', required: true, hint: 'The character you want to put INTO the video.' },
+        { key: 'video', type: 'video', label: 'Target Video', required: true, hint: 'The video to swap the character in.' },
+        { key: 'prompt', type: 'prompt', label: 'Prompt (optional)' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p'], default: '720p' }
+      ]
+    },
+    {
+      category: 'edit', id: 'wan-2.2-animate-move', apiModel: 'alibaba/wan-2.2/animate-move',
+      name: 'Wan 2.2 Animate Move', tag: 'motion • ALIBABA',
+      desc: 'Animate a still character using motion from a reference video. Upload character image + motion video.',
+      price: 0.084, maxDur: 10, ribbon: null,
+      specs: ['720P-1080P', 'POSE DRIVE'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Character Image', required: true, hint: 'The still character you want to animate.' },
+        { key: 'video', type: 'video', label: 'Motion Reference Video', required: true, hint: 'The video whose movements to copy.' },
+        { key: 'prompt', type: 'prompt', label: 'Prompt (optional)' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p'], default: '720p' }
+      ]
+    },
 
-    // === SWAP (face / head / character) ===
-    { category: 'swap', id: 'viggle-jst', apiModel: 'viggle/jst-1/body-swap', name: 'Viggle JST-1 Body Swap', tag: 'swap • VIGGLE', desc: 'Full body + face swap into any video. 3D-aware, handles complex motion.', price: 0.010, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['720P', 'FULL BODY', '$0.01/SEC'] },
-    { category: 'swap', id: 'wan-animate', apiModel: 'alibaba/wan-animate/character-swap', name: 'Wan Animate', tag: 'swap • ALIBABA', desc: 'Character replacement in realistic footage. Strong on faces.', price: 0.038, ribbon: null, specs: ['1080P', 'CHARACTER'] },
-    { category: 'swap', id: 'face-swap-pro', apiModel: 'roop/face-swap-pro', name: 'Face Swap Pro', tag: 'swap • CINEMATIC', desc: 'Face-only swap. Best for headshots, talking heads, and dialogue scenes.', price: 0.015, ribbon: null, specs: ['1080P', 'FACE ONLY'] },
+    // === EFFECTS (one-click, image only) ===
+    {
+      category: 'effects', id: 'fx-hulk', apiModel: 'video-effects/hulk',
+      name: 'Hulk Transform', tag: 'effect • ONE-CLICK',
+      desc: 'Transform any person into the Hulk. Best with half-body or full-body single-person photos. No prompt needed.',
+      price: 0.032, maxDur: 5, ribbon: { text: 'GRONK MODE', cls: 'hot' },
+      specs: ['1-CLICK', 'SINGLE PERSON', 'FUNNY'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Person Photo', required: true, hint: 'Single person, half-body or full-body works best.' }
+      ]
+    },
+    {
+      category: 'effects', id: 'fx-flying', apiModel: 'video-effects/flying',
+      name: 'Flying', tag: 'effect • ONE-CLICK',
+      desc: 'Makes a person fly. Realistic-style single-person photos. Best with full-body shots and scenic backgrounds.',
+      price: 0.032, maxDur: 5, ribbon: null,
+      specs: ['1-CLICK', 'SINGLE PERSON'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Person Photo', required: true, hint: 'Full-body shot with scenic background works best.' }
+      ]
+    },
+    {
+      category: 'effects', id: 'fx-body-shake', apiModel: 'video-effects/body-shake',
+      name: 'Body Shake', tag: 'effect • ONE-CLICK',
+      desc: 'Body shake dance animation. Works on realistic and anime-style photos. Person must be visible from thighs up.',
+      price: 0.032, maxDur: 5, ribbon: null,
+      specs: ['1-CLICK', 'DANCE'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Person Photo', required: true, hint: 'Person visible from thighs up works best.' }
+      ]
+    },
+    {
+      category: 'effects', id: 'fx-shake-dance', apiModel: 'video-effects/shake-dance',
+      name: 'Shake Dance', tag: 'effect • ONE-CLICK',
+      desc: 'Viral shake dance animation. Upload any person photo and they start dancing.',
+      price: 0.032, maxDur: 5, ribbon: null,
+      specs: ['1-CLICK', 'DANCE', 'VIRAL'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Person Photo', required: true }
+      ]
+    },
+    {
+      category: 'effects', id: 'fx-zoom-out', apiModel: 'video-effects/zoom-out',
+      name: 'Cinematic Zoom Out', tag: 'effect • ONE-CLICK',
+      desc: 'Dramatic cinematic zoom-out from any image. Best for product shots and scenic views.',
+      price: 0.032, maxDur: 5, ribbon: null,
+      specs: ['1-CLICK', 'CINEMATIC'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Source Image', required: true }
+      ]
+    },
+    {
+      category: 'effects', id: 'fx-gender-swap', apiModel: 'video-effects/gender-swap',
+      name: 'Gender Swap', tag: 'effect • ONE-CLICK',
+      desc: 'Swaps the gender appearance of a person in a photo. Great for funny content.',
+      price: 0.032, maxDur: 5, ribbon: null,
+      specs: ['1-CLICK', 'FUNNY'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Person Photo', required: true }
+      ]
+    },
 
-    // === MOTION PRESETS ===
-    { category: 'motion', id: 'viggle-template', apiModel: 'viggle/template-motion', name: 'Viggle Motion Templates', tag: 'motion • VIGGLE', desc: '8,000+ motion templates: dances, sports, anime fights, viral memes.', price: 0.010, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['TEMPLATES', 'VIRAL'] },
-    { category: 'motion', id: 'wan-pose', apiModel: 'alibaba/wan-pose-driven', name: 'Wan Pose-Driven', tag: 'motion • ALIBABA', desc: 'Drive your character with any pose sequence or skeleton.', price: 0.035, ribbon: null, specs: ['1080P', 'POSE'] },
-
-    // === AUDIO / LIP-SYNC ===
-    { category: 'audio', id: 'wan-2.7-audio', apiModel: 'alibaba/wan-2.7/audio-driven', name: 'Wan 2.7 Audio-Driven', tag: 'audio • ALIBABA', desc: 'Drive lip-sync + facial motion from any audio track. Perfect for dubbing.', price: 0.050, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'LIP SYNC'] },
-    { category: 'audio', id: 'sync-labs', apiModel: 'sync-labs/lip-sync-2', name: 'Sync Labs Lip-Sync', tag: 'audio • SYNC', desc: 'Industry-standard lip sync. Handles multi-language dubbing.', price: 0.040, ribbon: null, specs: ['1080P', 'LIP SYNC'] }
+    // === PHOTO TOOLS ===
+    {
+      category: 'photo', id: 'wan-2.7-img-edit', apiModel: 'alibaba/wan-2.7/image-edit',
+      name: 'Wan 2.7 Image Edit', tag: 'photo • ALIBABA',
+      desc: 'Edit, restore, colorize photos via text instruction. $0.03/pic. Prompt: "restore this 1970s photo, remove scratches, colorize naturally"',
+      price: 0.030, maxDur: 0, ribbon: null,
+      specs: ['$0.03/PIC', 'RESTORE', 'COLORIZE', 'EDIT'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Edit Instruction', required: true, hint: 'e.g. "Restore this old photo, remove scratches, colorize naturally"' },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'photo', id: 'wan-2.7-img-edit-pro', apiModel: 'alibaba/wan-2.7-pro/image-edit',
+      name: 'Wan 2.7 Pro Image Edit', tag: 'photo • ALIBABA',
+      desc: 'Higher fidelity photo editing. 4K-capable. Better for complex edits and multiple reference images. $0.075/pic.',
+      price: 0.075, maxDur: 0, ribbon: null,
+      specs: ['4K', '$0.075/PIC', 'PREMIUM'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Edit Instruction', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'image2', type: 'image', label: 'Reference Image 2 (optional)' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'photo', id: 'atlas-upscaler', apiModel: 'atlascloud/image-upscaler',
+      name: 'Image Upscaler', tag: 'photo • ATLAS',
+      desc: 'AI super-resolution upscaler. Enlarges any image while preserving and enhancing detail. No prompt needed.',
+      price: 0.020, maxDur: 0, ribbon: null,
+      specs: ['UPSCALE', '$0.02/PIC', 'SUPER-RES'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Source Image', required: true }
+      ]
+    },
+    {
+      category: 'photo', id: 'atlas-vid-upscaler', apiModel: 'atlascloud/video-upscaler',
+      name: 'Video Upscaler', tag: 'photo • ATLAS',
+      desc: 'Upscale any video to higher resolution. Preserves audio.',
+      price: 0.021, maxDur: 0, ribbon: null,
+      specs: ['UPSCALE', 'VIDEO'],
+      inputs: [
+        { key: 'video', type: 'video', label: 'Source Video', required: true }
+      ]
+    }
   ];
 
   const NSFW_MODELS = [
-    // === GENERATE (uncensored) ===
-    { category: 'generate', id: 'wan-2.6-spicy', apiModel: 'alibaba/wan-2.6-spicy/image-to-video', name: 'Wan 2.6 I2V Spicy', tag: 'i2v • UNCENSORED', desc: 'Wan 2.6 with content filters removed. Multi-shot 1080p, character consistency.', price: 0.070, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['1080P', 'UNFILTERED', 'MULTI-SHOT'] },
-    { category: 'generate', id: 'wan-2.7-spicy', apiModel: 'alibaba/wan-2.7-spicy/image-to-video', name: 'Wan 2.7 I2V Spicy', tag: 'i2v • UNCENSORED', desc: 'Latest Wan, no filters. First-frame / last-frame / continuation modes.', price: 0.045, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'UNFILTERED', 'AUDIO'] },
-    { category: 'generate', id: 'wan-2.2-spicy', apiModel: 'alibaba/wan-2.2-spicy/image-to-video', name: 'Wan 2.2 Spicy + LoRA', tag: 'i2v • LORA-READY', desc: 'Character-driven. Supports custom LoRA for personalized styles.', price: 0.025, ribbon: null, specs: ['720P', 'LORA', 'MULTI-SUBJ'] },
-    { category: 'generate', id: 'wan-2.2-turbo-spicy', apiModel: 'alibaba/wan-2.2-turbo-spicy/image-to-video', name: 'Wan 2.2 Turbo Spicy', tag: 'i2v • BUDGET', desc: 'Cheapest uncensored option. Great for rapid iteration.', price: 0.010, ribbon: null, specs: ['480P', 'BUDGET'] },
-    { category: 'generate', id: 'seedance-spicy', apiModel: 'bytedance/seedance-v1.5-spicy/image-to-video', name: 'Seedance v1.5 Spicy', tag: 'i2v • UNCENSORED', desc: 'Seedance quality with filters removed. Supports custom LoRA.', price: 0.049, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['1080P', 'LORA'] },
+    // === GENERATE ===
+    {
+      category: 'generate', id: 'seedance-spicy', apiModel: 'bytedance/seedance-v1.5-pro/image-to-video-spicy',
+      name: 'Seedance v1.5 Pro Spicy', tag: 'i2v • BEST QUALITY',
+      desc: '⭐ HIGHEST QUALITY NSFW. Smooth motion, superior subject coherence. Handles lower-quality source images well. No content filters.',
+      price: 0.049, maxDur: 12, ribbon: { text: 'BEST', cls: 'hot' },
+      specs: ['1080P', '4–12s', 'TOP QUALITY', 'NO FILTERS'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true, hint: 'Cinematic terms like "depth of field" work great.' },
+        { key: 'image', type: 'image', label: 'First Frame', required: false },
+        { key: 'end_image', type: 'image', label: 'Last Frame (optional)' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 12, min: 4 },
+        { key: 'aspect_ratio', type: 'select', label: 'Aspect Ratio', options: ['16:9','9:16','1:1'], default: '16:9' },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'wan-2.6-spicy', apiModel: 'atlascloud/wan-2.6-spicy/image-to-video',
+      name: 'Wan 2.6 I2V Spicy', tag: 'i2v • UNCENSORED',
+      desc: 'Wan 2.6 no content filters. Supports audio input, multi-shot mode. 720p/1080p up to 15s.',
+      price: 0.070, maxDur: 15, ribbon: { text: 'HOT', cls: 'hot' },
+      specs: ['720P-1080P', 'UP TO 15s', 'AUDIO', 'MULTI-SHOT'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 15 },
+        { key: 'shot_type', type: 'select', label: 'Shot Type', options: ['single','multi'], default: 'single' },
+        { key: 'audio', type: 'audio', label: 'Audio File (optional)' },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'generate_audio', type: 'toggle', label: 'Generate Audio', default: true },
+        { key: 'enable_prompt_expansion', type: 'toggle', label: 'Prompt Expansion', default: false },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'wan-2.2-spicy-lora', apiModel: 'alibaba/wan-2.2-spicy/image-to-video-lora',
+      name: 'Wan 2.2 Spicy + LoRA', tag: 'i2v • LORA READY',
+      desc: 'Community favorite for anatomy/body realism. Add your Civitai or HuggingFace LoRA URL. High Noise = overall style, Low Noise = detail.',
+      price: 0.040, maxDur: 10, ribbon: null,
+      specs: ['720P-1080P', 'LORA', 'BODY REALISM'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'lora_url', type: 'text', label: 'LoRA URL', hint: 'Civitai or HuggingFace .safetensors URL', placeholder: 'https://civitai.com/api/download/models/...' },
+        { key: 'lora_strength', type: 'select', label: 'LoRA Strength', options: ['0.3','0.5','0.7','1.0'], default: '0.7' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 10 },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'wan-2.2-spicy', apiModel: 'alibaba/wan-2.2-spicy/image-to-video',
+      name: 'Wan 2.2 Spicy', tag: 'i2v • UNCENSORED',
+      desc: 'Standard uncensored Wan 2.2 without LoRA. Good all-around NSFW I2V. Multi-subject support.',
+      price: 0.022, maxDur: 10, ribbon: null,
+      specs: ['720P', 'MULTI-SUBJECT', '$0.022/SEC'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 10 },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'generate', id: 'wan-2.2-turbo-spicy', apiModel: 'atlascloud/wan-2.2-turbo-spicy/image-to-video',
+      name: 'Wan 2.2 Turbo Spicy', tag: 'i2v • CHEAPEST',
+      desc: 'Cheapest confirmed NSFW option. $0.02/run flat. 480p-720p. Fast generation. $10 = 500 runs.',
+      price: 0.020, maxDur: 8, ribbon: { text: 'CHEAPEST', cls: 'new' },
+      specs: ['480P-720P', '$0.02/RUN', '500/$10', 'FAST'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p'], default: '480p' },
+        { key: 'duration', type: 'duration', max: 8 }
+      ]
+    },
+
+    // === INFINITE (up to 30s) ===
+    {
+      category: 'infinite', id: 'wan-turbo-infinite', apiModel: 'atlascloud/wan-2.2-turbo-spicy/infinite-image-to-video',
+      name: 'Wan 2.2 Turbo Spicy Infinite', tag: 'i2v • UP TO 30s',
+      desc: '🎬 Up to 30 SECONDS. Segmented prompts — up to 6 × 5s segments stitched into one MP4. One prompt per segment (one per line).',
+      price: 0.020, maxDur: 30, ribbon: { text: 'UP TO 30s', cls: 'hot' },
+      specs: ['480P-1080P', 'UP TO 30s', '$0.02/RUN', 'SEGMENTS'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Anchor Image', required: true, hint: 'Starting frame used across all segments.' },
+        { key: 'prompt', type: 'prompt', label: 'Segment Prompts', required: true, hint: 'Write one prompt per line. Each line = one 5s segment. Up to 6 lines = 30s total.' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '480p' }
+      ]
+    },
+    {
+      category: 'infinite', id: 'wan-turbo-infinite-lora', apiModel: 'atlascloud/wan-2.2-turbo-spicy/infinite-image-to-video-lora',
+      name: 'Wan 2.2 Turbo Spicy Infinite + LoRA', tag: 'i2v • 30s + LORA',
+      desc: '30s infinite video WITH custom LoRA for consistent character identity across all segments. $0.026/run.',
+      price: 0.026, maxDur: 30, ribbon: null,
+      specs: ['480P-1080P', 'UP TO 30s', 'LORA', '$0.026/RUN'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Anchor Image', required: true },
+        { key: 'prompt', type: 'prompt', label: 'Segment Prompts', required: true, hint: 'One prompt per line. Up to 6 lines = 30s.' },
+        { key: 'lora_url', type: 'text', label: 'LoRA URL', hint: 'Civitai or HuggingFace .safetensors URL', placeholder: 'https://civitai.com/api/download/models/...' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '480p' }
+      ]
+    },
 
     // === EDIT ===
-    { category: 'edit', id: 'wan-2.7-edit-spicy', apiModel: 'alibaba/wan-2.7-spicy/video-edit', name: 'Wan 2.7 Video-Edit Spicy', tag: 'v2v • UNCENSORED', desc: 'Edit any video with text instructions + reference image. No content filters.', price: 0.038, ribbon: null, specs: ['1080P', 'EDIT'] },
-    { category: 'edit', id: 'wan-2.7-ref2vid-spicy', apiModel: 'alibaba/wan-2.7-spicy/reference-to-video', name: 'Wan 2.7 Reference-to-Video', tag: 'r2v • UNCENSORED', desc: 'Multi-subject character-driven with voice cloning. Long-form capable.', price: 0.040, ribbon: null, specs: ['1080P', 'VOICE', 'LONG-FORM'] },
+    {
+      category: 'edit', id: 'wan-2.7-ref2vid-nsfw', apiModel: 'alibaba/wan-2.7/reference-to-video',
+      name: 'Wan 2.7 Reference-to-Video', tag: 'r2v • UNCENSORED',
+      desc: 'Multi-subject consistent video with voice cloning. Use character1/character2 in prompt. Up to 5 references.',
+      price: 0.100, maxDur: 15, ribbon: null,
+      specs: ['1080P', '2–15s', 'VOICE CLONE', 'MULTI-SUBJECT'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true, hint: 'Use "character1" and "character2" to reference your uploaded images.' },
+        { key: 'image', type: 'image', label: 'Reference 1 (character1)', required: true },
+        { key: 'image2', type: 'image', label: 'Reference 2 (character2) optional' },
+        { key: 'audio', type: 'audio', label: 'Voice Clone Audio (optional)' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 15, min: 2 },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'edit', id: 'wan-2.7-video-edit-nsfw', apiModel: 'alibaba/wan-2.7/video-edit',
+      name: 'Wan 2.7 Video-Edit', tag: 'v2v • UNCENSORED',
+      desc: 'Edit any video with text instructions. Change outfits, scenes, or style. No content filters.',
+      price: 0.100, maxDur: 15, ribbon: null,
+      specs: ['1080P', 'TEXT EDIT', 'STYLE SWAP'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Edit Instruction', required: true, hint: 'e.g. "Remove her top, add dramatic lighting"' },
+        { key: 'video', type: 'video', label: 'Source Video', required: true },
+        { key: 'image', type: 'image', label: 'Reference Image (optional)' },
+        { key: 'audio_mode', type: 'select', label: 'Audio Mode', options: ['auto','origin'], default: 'auto' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '720p' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
 
-    // === SWAP ===
-    { category: 'swap', id: 'viggle-jst-spicy', apiModel: 'viggle/jst-1-uncensored/body-swap', name: 'Viggle Body Swap (Uncensored)', tag: 'swap • VIGGLE', desc: 'Full body swap into any video, no content restrictions. 3D-aware motion.', price: 0.012, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['720P', 'FULL BODY', 'BUDGET'] },
-    { category: 'swap', id: 'wan-animate-spicy', apiModel: 'alibaba/wan-animate-spicy/character-swap', name: 'Wan Animate Spicy', tag: 'swap • UNCENSORED', desc: 'Full character replacement with uncensored content support.', price: 0.040, ribbon: null, specs: ['1080P', 'CHARACTER'] },
-    { category: 'swap', id: 'face-swap-spicy', apiModel: 'roop/face-swap-uncensored', name: 'Face Swap (Uncensored)', tag: 'swap • FACE', desc: 'Face-only swap with no content filtering.', price: 0.015, ribbon: null, specs: ['1080P', 'FACE ONLY'] },
+    // === EFFECTS (NSFW) ===
+    {
+      category: 'effects', id: 'fx-jiggle', apiModel: 'video-effects/jiggle-up',
+      name: 'Jiggle Up', tag: 'effect • ONE-CLICK',
+      desc: 'Jiggle animation effect on a person. Upload photo, no prompt needed.',
+      price: 0.032, maxDur: 5, ribbon: { text: 'HOT', cls: 'hot' },
+      specs: ['1-CLICK', 'NO PROMPT'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Person Photo', required: true }
+      ]
+    },
+    {
+      category: 'effects', id: 'fx-sexy-me', apiModel: 'video-effects/sexy-me',
+      name: 'Sexy Me', tag: 'effect • ONE-CLICK',
+      desc: 'Applies a sexy appearance transformation effect. Single person photo, no prompt needed.',
+      price: 0.032, maxDur: 5, ribbon: null,
+      specs: ['1-CLICK', 'NO PROMPT'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Person Photo', required: true }
+      ]
+    },
+    {
+      category: 'effects', id: 'fx-french-kiss', apiModel: 'video-effects/french-kiss',
+      name: 'French Kiss', tag: 'effect • ONE-CLICK',
+      desc: 'Kiss animation effect. Upload photo, no prompt needed.',
+      price: 0.032, maxDur: 5, ribbon: null,
+      specs: ['1-CLICK', 'NO PROMPT'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Person Photo', required: true }
+      ]
+    },
+    {
+      category: 'effects', id: 'fx-love-drop', apiModel: 'video-effects/love-drop',
+      name: 'Love Drop', tag: 'effect • ONE-CLICK',
+      desc: 'Love/romantic animation effect. Upload photo, no prompt needed.',
+      price: 0.032, maxDur: 5, ribbon: null,
+      specs: ['1-CLICK', 'NO PROMPT'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Person Photo', required: true }
+      ]
+    },
 
-    // === MOTION PRESETS ===
-    { category: 'motion', id: 'viggle-spicy-templates', apiModel: 'viggle/uncensored-templates', name: 'Spicy Motion Templates', tag: 'motion • TEMPLATES', desc: 'Curated motion presets: dance, twerk, pole, walks, kiss cam. Templates only — your character.', price: 0.012, ribbon: { text: 'HOT', cls: 'hot' }, specs: ['TEMPLATES', 'DANCE', 'KISS CAM'] },
-    { category: 'motion', id: 'wan-pose-spicy', apiModel: 'alibaba/wan-pose-spicy', name: 'Wan Pose-Driven Spicy', tag: 'motion • POSE', desc: 'Drive your character with custom pose sequences. Full motion control.', price: 0.035, ribbon: null, specs: ['1080P', 'POSE'] },
-    { category: 'motion', id: 'dance-preset-pack', apiModel: 'community/dance-pack-v1', name: 'Trending Dance Pack', tag: 'motion • TRENDING', desc: 'Latest viral choreo — TikTok dances, club moves, performance routines.', price: 0.015, ribbon: null, specs: ['VIRAL', 'CHOREO'] },
-
-    // === AUDIO ===
-    { category: 'audio', id: 'wan-2.7-audio-spicy', apiModel: 'alibaba/wan-2.7-spicy/audio-driven', name: 'Wan 2.7 Audio-Driven Spicy', tag: 'audio • UNCENSORED', desc: 'Drive lip-sync + facial motion from any audio. Uncensored variant.', price: 0.050, ribbon: { text: 'NEW', cls: 'new' }, specs: ['1080P', 'LIP SYNC'] }
+    // === IMAGE GEN ===
+    {
+      category: 'image', id: 'flux-schnell', apiModel: 'black-forest-labs/flux-schnell',
+      name: 'FLUX Schnell', tag: 'image • BLACK FOREST',
+      desc: 'Fastest uncensored image gen. No filters. $0.003/pic — $3 = 1,000 images. Best for batch and prototyping.',
+      price: 0.003, maxDur: 0, ribbon: { text: 'CHEAPEST', cls: 'new' },
+      specs: ['$0.003/PIC', '1000/$3', 'FASTEST', 'NO FILTERS'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'width', type: 'select', label: 'Width', options: ['512','768','1024'], default: '1024' },
+        { key: 'height', type: 'select', label: 'Height', options: ['512','768','1024'], default: '1024' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'image', id: 'flux-dev', apiModel: 'black-forest-labs/flux-dev',
+      name: 'FLUX Dev', tag: 'image • BLACK FOREST',
+      desc: 'High-detail uncensored output. Strong on lighting, textures, fine detail. $0.012/pic.',
+      price: 0.012, maxDur: 0, ribbon: null,
+      specs: ['$0.012/PIC', 'HIGH DETAIL', 'NO FILTERS'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'width', type: 'select', label: 'Width', options: ['512','768','1024'], default: '1024' },
+        { key: 'height', type: 'select', label: 'Height', options: ['512','768','1024'], default: '1024' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'image', id: 'flux-dev-lora', apiModel: 'black-forest-labs/flux-dev-lora',
+      name: 'FLUX Dev + LoRA', tag: 'image • OUTFIT SWAP',
+      desc: 'Uncensored image gen with custom LoRA. Use for outfit swaps, character looks, appearance styles. $0.015/pic.',
+      price: 0.015, maxDur: 0, ribbon: { text: 'OUTFIT SWAP', cls: 'hot' },
+      specs: ['$0.015/PIC', 'LORA', 'OUTFIT SWAP'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true, hint: 'Describe the desired outfit or appearance change.' },
+        { key: 'image', type: 'image', label: 'Source Image (optional)', hint: 'For image-to-image style swap.' },
+        { key: 'lora_url', type: 'text', label: 'LoRA URL (optional)', hint: 'Civitai or HuggingFace .safetensors URL', placeholder: 'https://civitai.com/api/download/models/...' },
+        { key: 'lora_scale', type: 'select', label: 'LoRA Strength', options: ['0.5','0.75','1.0'], default: '0.75' },
+        { key: 'width', type: 'select', label: 'Width', options: ['512','768','1024'], default: '1024' },
+        { key: 'height', type: 'select', label: 'Height', options: ['512','768','1024'], default: '1024' },
+        { key: 'seed', type: 'seed' }
+      ]
+    }
   ];
 
-  const CATEGORIES = [
+  const CATEGORIES_CINEMA = [
     { key: 'all', label: 'All' },
     { key: 'generate', label: 'Generate' },
-    { key: 'edit', label: 'Edit' },
-    { key: 'swap', label: 'Swap' },
-    { key: 'motion', label: 'Motion' },
-    { key: 'audio', label: 'Audio' }
+    { key: 'edit', label: 'Edit / Swap' },
+    { key: 'effects', label: '⚡ Effects' },
+    { key: 'photo', label: 'Photo Tools' }
   ];
 
+  const CATEGORIES_NSFW = [
+    { key: 'all', label: 'All' },
+    { key: 'generate', label: 'Generate' },
+    { key: 'infinite', label: '🎬 Infinite (30s)' },
+    { key: 'edit', label: 'Edit' },
+    { key: 'effects', label: '⚡ Effects' },
+    { key: 'image', label: 'Image Gen' }
+  ];
+
+  // ================================================================
+  // STATE
+  // ================================================================
   const state = {
-    cinema: { model: CINEMA_MODELS[0], image: null, imageFile: null, category: 'all' },
-    nsfw: { model: NSFW_MODELS[0], image: null, imageFile: null, category: 'all' }
+    cinema: { model: CINEMA_MODELS[0], category: 'all', files: {} },
+    nsfw: { model: NSFW_MODELS[0], category: 'all', files: {} }
   };
 
+  // ================================================================
+  // DYNAMIC STUDIO RENDERER
+  // Builds the correct input fields for whatever model is selected
+  // ================================================================
+  function renderStudio(section) {
+    const m = state[section].model;
+    const isNsfw = section === 'nsfw';
+    const accentClass = isNsfw ? 'accent-nsfw' : 'accent-cinema';
+    const studioEl = document.getElementById(`${section}-studio`);
+
+    // Reset files state
+    state[section].files = {};
+
+    // Build the cost estimator
+    const isPerRun = m.maxDur === 0;
+    const costHtml = isPerRun
+      ? `<div class="est-label">EST. COST</div><div class="est-amt"><span class="pre">$</span><span id="${section}-cost">${m.price.toFixed(3)}</span></div></div><div class="breakdown" id="${section}-breakdown">$${m.price.toFixed(3)} per image/run`
+      : `<div class="est-label">EST. COST</div><div class="est-amt"><span class="pre">$</span><span id="${section}-cost">${(5 * m.price).toFixed(3)}</span></div></div><div class="breakdown" id="${section}-breakdown">5s × $${m.price.toFixed(3)}/sec`;
+
+    // Build duration selector if needed
+    let durationHtml = '';
+    if (m.maxDur > 0) {
+      const min = m.inputs.find(i => i.key === 'duration')?.min || 3;
+      const max = m.maxDur;
+      const steps = [2,3,4,5,8,10,12,15,30].filter(d => d >= min && d <= max);
+      const def = steps.includes(5) ? 5 : steps[0];
+      durationHtml = `
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">Duration (sec)</label>
+            <select id="${section}-dur" onchange="updateCostDynamic('${section}')">
+              ${steps.map(d => `<option value="${d}"${d===def?' selected':''}>${d}s</option>`).join('')}
+            </select>
+          </div>
+        </div>`;
+    }
+
+    // Build each input field
+    let fieldsHtml = '';
+    for (const inp of m.inputs) {
+      if (inp.key === 'duration') continue; // handled separately
+      if (inp.key === 'width' || inp.key === 'height') continue; // handled in submit
+      const req = inp.required ? '<span class="req">*</span>' : '';
+      const hint = inp.hint ? `<div class="helper">${inp.hint}</div>` : '';
+
+      switch (inp.type) {
+        case 'prompt':
+          fieldsHtml += `<div class="field">
+            <label class="field-label">${inp.label} ${req}</label>
+            <textarea id="${section}-${inp.key}" placeholder="${inp.placeholder || 'Describe the scene, motion, and styling.'}">${inp.default||''}</textarea>
+            ${hint}
+          </div>`;
+          break;
+        case 'neg-prompt':
+          fieldsHtml += `<div class="field">
+            <label class="field-label">${inp.label}</label>
+            <input type="text" id="${section}-${inp.key}" placeholder="Elements to avoid in the output">
+            ${hint}
+          </div>`;
+          break;
+        case 'image':
+          fieldsHtml += `<div class="field">
+            <label class="field-label">${inp.label} ${req}</label>
+            <label class="upload-zone" id="${section}-${inp.key}-zone">
+              <div class="ic">+ UPLOAD IMAGE</div>
+              <div class="upload-hint">PNG, JPG, WebP · Max 50MB</div>
+              <input type="file" accept="image/*" id="${section}-${inp.key}-file" onchange="handleUpload('${section}','${inp.key}')">
+            </label>
+            ${hint}
+          </div>`;
+          break;
+        case 'video':
+          fieldsHtml += `<div class="field">
+            <label class="field-label">${inp.label} ${req}</label>
+            <label class="upload-zone" id="${section}-${inp.key}-zone">
+              <div class="ic">+ UPLOAD VIDEO</div>
+              <div class="upload-hint">MP4, MOV · Max 50MB</div>
+              <input type="file" accept="video/*" id="${section}-${inp.key}-file" onchange="handleUpload('${section}','${inp.key}')">
+            </label>
+            ${hint}
+          </div>`;
+          break;
+        case 'audio':
+          fieldsHtml += `<div class="field">
+            <label class="field-label">${inp.label}</label>
+            <label class="upload-zone" id="${section}-${inp.key}-zone">
+              <div class="ic">+ UPLOAD AUDIO</div>
+              <div class="upload-hint">MP3, WAV, M4A · Max 50MB</div>
+              <input type="file" accept="audio/*" id="${section}-${inp.key}-file" onchange="handleUpload('${section}','${inp.key}')">
+            </label>
+            ${hint}
+          </div>`;
+          break;
+        case 'select':
+          if (inp.key === 'resolution' || inp.key === 'aspect_ratio' || inp.key === 'shot_type' || inp.key === 'audio_mode' || inp.key === 'mode') {
+            fieldsHtml += `<div class="field">
+              <label class="field-label">${inp.label}</label>
+              <select id="${section}-${inp.key}">
+                ${(inp.options||[]).map(o => `<option value="${o}"${o===inp.default?' selected':''}>${o}</option>`).join('')}
+              </select>
+              ${hint}
+            </div>`;
+          } else if (inp.key === 'lora_strength' || inp.key === 'lora_scale') {
+            fieldsHtml += `<div class="field">
+              <label class="field-label">${inp.label}</label>
+              <select id="${section}-${inp.key}">
+                ${(inp.options||[]).map(o => `<option value="${o}"${o===inp.default?' selected':''}>${o}</option>`).join('')}
+              </select>
+              ${hint}
+            </div>`;
+          }
+          break;
+        case 'text':
+          fieldsHtml += `<div class="field">
+            <label class="field-label">${inp.label}</label>
+            <input type="text" id="${section}-${inp.key}" placeholder="${inp.placeholder||''}">
+            ${hint}
+          </div>`;
+          break;
+        case 'toggle':
+          fieldsHtml += `<div class="field field-toggle">
+            <label class="field-label">${inp.label}</label>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="${section}-${inp.key}" ${inp.default?' checked':''}>
+              <span class="toggle-slider"></span>
+            </label>
+            ${hint}
+          </div>`;
+          break;
+        case 'seed':
+          fieldsHtml += `<div class="field">
+            <label class="field-label">Seed <span style="font-size:10px;opacity:0.6">(-1 = random)</span></label>
+            <input type="number" id="${section}-seed" value="-1" min="-1">
+          </div>`;
+          break;
+      }
+    }
+
+    studioEl.innerHTML = `
+      <div class="studio-header">
+        <div>
+          <div class="label">NOW LOADED</div>
+          <div class="selected-model" id="${section}-selected-name">${m.name}</div>
+        </div>
+      </div>
+      ${fieldsHtml}
+      ${durationHtml}
+      <div class="estimate">
+        <div>
+          ${costHtml}
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="resetPanel('${section}')">RESET</button>
+        <button class="btn btn-primary" id="${section}-run" onclick="generate('${section}')">RUN GENERATION</button>
+      </div>
+      <div class="output" id="${section}-output">
+        <div class="out-label">GENERATION</div>
+        <div class="status-line" id="${section}-status">Ready.</div>
+        <video id="${section}-video" controls style="display:none;"></video>
+        <div id="${section}-download"></div>
+      </div>
+    `;
+  }
+
+  // ================================================================
+  // FILE UPLOAD HANDLER
+  // ================================================================
+  function handleUpload(section, key) {
+    const input = document.getElementById(`${section}-${key}-file`);
+    const zone = document.getElementById(`${section}-${key}-zone`);
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      state[section].files[key] = { data: ev.target.result, name: file.name, type: file.type };
+      const isVideo = file.type.startsWith('video/');
+      const isAudio = file.type.startsWith('audio/');
+      if (isVideo) {
+        zone.innerHTML = `<div class="upload-confirm">✓ ${file.name}</div><input type="file" accept="video/*" id="${section}-${key}-file" onchange="handleUpload('${section}','${key}')">`;
+      } else if (isAudio) {
+        zone.innerHTML = `<div class="upload-confirm">♪ ${file.name}</div><input type="file" accept="audio/*" id="${section}-${key}-file" onchange="handleUpload('${section}','${key}')">`;
+      } else {
+        zone.innerHTML = `<img src="${ev.target.result}" alt="preview" style="max-width:100%;max-height:200px;display:block;margin:auto;"><input type="file" accept="image/*" id="${section}-${key}-file" onchange="handleUpload('${section}','${key}')">`;
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ================================================================
+  // COST UPDATER
+  // ================================================================
+  function updateCostDynamic(section) {
+    const m = state[section].model;
+    if (m.maxDur === 0) return;
+    const durEl = document.getElementById(`${section}-dur`);
+    if (!durEl) return;
+    const dur = parseFloat(durEl.value);
+    const total = (dur * m.price).toFixed(3);
+    const costEl = document.getElementById(`${section}-cost`);
+    const breakEl = document.getElementById(`${section}-breakdown`);
+    if (costEl) costEl.textContent = total;
+    if (breakEl) breakEl.textContent = `${dur}s × $${m.price.toFixed(3)}/sec`;
+  }
+
+  // Keep old function name working
+  function updateCost(section) { updateCostDynamic(section); }
+
+  // ================================================================
+  // FILTER + MODEL RENDER
+  // ================================================================
   function renderFilter(section, models, containerId) {
     const c = document.getElementById(`${section}-filter`);
     c.innerHTML = '';
-    CATEGORIES.forEach(cat => {
+    const cats = section === 'cinema' ? CATEGORIES_CINEMA : CATEGORIES_NSFW;
+    cats.forEach(cat => {
       const count = cat.key === 'all' ? models.length : models.filter(m => m.category === cat.key).length;
       if (count === 0 && cat.key !== 'all') return;
       const chip = document.createElement('div');
@@ -1185,6 +1843,7 @@
       const card = document.createElement('div');
       card.className = 'model-card' + (m.id === state[section].model.id ? ' selected' : '');
       card.dataset.id = m.id;
+      const isPerRun = m.maxDur === 0;
       card.innerHTML = `
         ${m.ribbon ? `<div class="ribbon ${m.ribbon.cls}">${m.ribbon.text}</div>` : ''}
         <div class="mtag">${m.tag}</div>
@@ -1193,44 +1852,236 @@
         <div class="specs">${m.specs.map(s => `<span>${s}</span>`).join('')}</div>
         <div class="price">
           <div class="amt"><span class="currency">$</span>${m.price.toFixed(3)}</div>
-          <div class="unit">/SEC</div>
+          <div class="unit">${isPerRun ? '/PIC' : '/SEC'} · ${m.maxDur > 0 ? 'MAX '+m.maxDur+'s' : 'IMAGE'}</div>
         </div>
       `;
       card.onclick = () => {
         state[section].model = m;
         document.querySelectorAll(`#${containerId} .model-card`).forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
-        document.getElementById(`${section}-selected-name`).textContent = m.name;
-        updateCost(section);
+        renderStudio(section);
       };
       c.appendChild(card);
     });
-    document.getElementById(`${section}-selected-name`).textContent = state[section].model.name;
   }
 
-  function updateCost(section) {
-    const dur = parseFloat(document.getElementById(`${section}-dur`).value);
-    const price = state[section].model.price;
-    const total = (dur * price).toFixed(3);
-    document.getElementById(`${section}-cost`).textContent = total;
-    document.getElementById(`${section}-breakdown`).textContent = `${dur} sec × $${price.toFixed(3)}/sec`;
-  }
-
-  function setupUpload(section) {
-    const input = document.getElementById(`${section}-file`);
-    const zone = document.getElementById(`${section}-upload`);
-    input.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      state[section].imageFile = file;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        state[section].image = ev.target.result;
-        zone.innerHTML = `<img src="${ev.target.result}" alt="source" />`;
-      };
-      reader.readAsDataURL(file);
+  // ================================================================
+  // UPLOAD HELPER — uploads a file (image/video/audio) to Atlas
+  // and returns a public URL
+  // ================================================================
+  async function uploadFile(section, key) {
+    const fileData = state[section].files[key];
+    if (!fileData) return null;
+    const res = await fetch('/.netlify/functions/upload-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image_base64: fileData.data, filename: fileData.name })
     });
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = { raw: text }; }
+    if (!res.ok) throw new Error(data.error || data.raw || `Upload failed (${res.status})`);
+    const url = data.data?.download_url || data.download_url || data.data?.url || data.url;
+    if (!url) throw new Error('Upload OK but no URL: ' + JSON.stringify(data).substring(0, 200));
+    return url;
   }
+
+  // ================================================================
+  // GENERATE — builds correct payload per model schema
+  // ================================================================
+  async function generate(section) {
+    const m = state[section].model;
+    const btn = document.getElementById(`${section}-run`);
+    btn.disabled = true;
+    const videoEl = document.getElementById(`${section}-video`);
+    const dlEl = document.getElementById(`${section}-download`);
+    if (videoEl) videoEl.style.display = 'none';
+    if (dlEl) dlEl.innerHTML = '';
+    showOutput(section);
+
+    try {
+      // Build the payload dynamically from model inputs
+      const payload = { model: m.apiModel };
+      const uploadedUrls = {};
+
+      // Validate required fields and collect values
+      for (const inp of m.inputs) {
+        if (inp.key === 'duration') continue;
+
+        const elId = `${section}-${inp.key}`;
+
+        // File fields — upload first
+        if (inp.type === 'image' || inp.type === 'video' || inp.type === 'audio') {
+          if (state[section].files[inp.key]) {
+            setStatus(section, `Uploading ${inp.label || inp.key}...`, 'pending');
+            const url = await uploadFile(section, inp.key);
+            uploadedUrls[inp.key] = url;
+          } else if (inp.required) {
+            throw new Error(`${inp.label || inp.key} is required — please upload a file`);
+          }
+          continue;
+        }
+
+        const el = document.getElementById(elId);
+        if (!el) continue;
+        let val = el.type === 'checkbox' ? el.checked : el.value;
+
+        if (inp.required && (!val || val.toString().trim() === '')) {
+          throw new Error(`${inp.label} is required`);
+        }
+
+        if (inp.type === 'toggle') { payload[inp.key] = val; continue; }
+        if (inp.type === 'seed') { const n = parseInt(val); if (!isNaN(n)) payload.seed = n; continue; }
+        if (inp.type === 'number') { payload[inp.key] = parseFloat(val); continue; }
+        if (val && val.toString().trim() !== '') payload[inp.key] = val;
+      }
+
+      // Add uploaded file URLs to payload
+      for (const [k, url] of Object.entries(uploadedUrls)) {
+        // Special mapping: image2 maps to last_image / reference images
+        if (k === 'image2') {
+          // For reference-to-video, add as second reference
+          if (!payload.references) payload.references = [];
+          if (uploadedUrls.image) payload.references = [uploadedUrls.image, url];
+          else payload.references = [url];
+          delete uploadedUrls.image2;
+        } else {
+          payload[k] = url;
+        }
+      }
+
+      // Handle reference-to-video special case
+      if (m.id === 'wan-2.7-ref2vid' || m.id === 'wan-2.7-ref2vid-nsfw') {
+        if (uploadedUrls.image) {
+          payload.references = [uploadedUrls.image];
+          if (uploadedUrls.image2) payload.references.push(uploadedUrls.image2);
+          delete payload.image;
+          delete payload.image2;
+        }
+      }
+
+      // Add resolution
+      const resEl = document.getElementById(`${section}-resolution`);
+      if (!resEl) {
+        // Find resolution in model inputs
+        const resInp = m.inputs.find(i => i.key === 'resolution');
+        if (resInp) {
+          const resSelect = document.getElementById(`${section}-resolution`);
+          if (resSelect) payload.resolution = resSelect.value;
+        }
+      } else {
+        payload.resolution = resEl.value;
+      }
+
+      // Add duration if applicable
+      if (m.maxDur > 0) {
+        const durEl = document.getElementById(`${section}-dur`);
+        if (durEl) payload.duration = parseInt(durEl.value);
+      }
+
+      // Handle infinite model — split prompt into segments array
+      if (m.id === 'wan-turbo-infinite' || m.id === 'wan-turbo-infinite-lora') {
+        const segments = (payload.prompt || '').split('\n').map(s => s.trim()).filter(Boolean).slice(0, 6);
+        payload.prompts = segments;
+        delete payload.prompt;
+        payload.duration_per_segment = 5;
+      }
+
+      // Add LoRA fields if provided
+      const loraUrlEl = document.getElementById(`${section}-lora_url`);
+      if (loraUrlEl && loraUrlEl.value.trim()) {
+        payload.lora_url = loraUrlEl.value.trim();
+        const loraStrEl = document.getElementById(`${section}-lora_strength`) || document.getElementById(`${section}-lora_scale`);
+        if (loraStrEl) payload.lora_scale = parseFloat(loraStrEl.value);
+      }
+
+      // Width/height for image gen models
+      if (m.category === 'image') {
+        const wEl = document.getElementById(`${section}-width`);
+        const hEl = document.getElementById(`${section}-height`);
+        payload.width = wEl ? parseInt(wEl.value) : 1024;
+        payload.height = hEl ? parseInt(hEl.value) : 1024;
+      }
+
+      setStatus(section, 'Submitting generation request...', 'pending');
+      const genRes = await fetch('/.netlify/functions/generate-video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const genText = await genRes.text();
+      let genData;
+      try { genData = JSON.parse(genText); } catch { genData = { raw: genText }; }
+      if (!genRes.ok) throw new Error(genData.error || genData.data?.error || genData.raw || `Submit failed (${genRes.status})`);
+      const predId = genData.data?.id || genData.id;
+      if (!predId) throw new Error('No prediction ID: ' + JSON.stringify(genData).substring(0, 200));
+
+      setStatus(section, `Submitted (id: ${predId}). Processing...`, 'pending');
+
+      // Poll for result
+      for (let i = 0; i < 120; i++) {
+        await new Promise(r => setTimeout(r, 5000));
+        const pollRes = await fetch(`/.netlify/functions/check-status?id=${encodeURIComponent(predId)}`);
+        const pollData = await pollRes.json();
+        const d = pollData.data || pollData;
+        const status = d.status;
+        setStatus(section, `Status: ${status || 'processing'}... (${i + 1})`, 'pending');
+        if (status === 'completed' || status === 'succeeded') {
+          const outUrl = d.outputs?.[0];
+          if (!outUrl) throw new Error('Completed but no output URL');
+          setStatus(section, '✓ Generation complete!', 'ok');
+          // Show output — could be video or image
+          const isImage = outUrl.match(/\.(jpg|jpeg|png|webp)$/i) || m.category === 'image' || m.category === 'photo';
+          if (isImage) {
+            document.getElementById(`${section}-output`).innerHTML += `<img src="${outUrl}" style="max-width:100%;margin-top:16px;display:block;">`;
+          } else {
+            if (videoEl) { videoEl.src = outUrl; videoEl.style.display = 'block'; }
+          }
+          if (dlEl) dlEl.innerHTML = `<a class="dl-btn" href="${outUrl}" download target="_blank">⬇ DOWNLOAD</a>`;
+          return;
+        }
+        if (status === 'failed' || status === 'error') throw new Error(d.error || 'Generation failed');
+      }
+      throw new Error('Timed out after 10 minutes');
+
+    } catch (err) {
+      setStatus(section, '✗ ' + err.message, 'err');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ================================================================
+  // HELPERS
+  // ================================================================
+  function showOutput(section) {
+    const el = document.getElementById(`${section}-output`);
+    if (el) { el.classList.add('show'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  }
+
+  function setStatus(section, text, kind) {
+    const el = document.getElementById(`${section}-status`);
+    if (!el) return;
+    el.className = 'status-line' + (kind ? ' ' + kind : '');
+    el.innerHTML = (kind === 'pending' ? '<span class="spinner"></span>' : '') + text;
+  }
+
+  function resetPanel(section) {
+    state[section].files = {};
+    renderStudio(section);
+  }
+
+  function switchTo(section) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.section === section));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${section}`));
+  }
+
+  function confirmAge() {
+    sessionStorage.setItem('age_ok', '1');
+    document.getElementById('ageGate').classList.remove('show');
+    switchTo('nsfw');
+  }
+  function declineAge() { document.getElementById('ageGate').classList.remove('show'); }
 
   document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = () => {
@@ -1243,167 +2094,15 @@
     };
   });
 
-  function switchTo(section) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.section === section));
-    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${section}`));
-  }
-
-  function confirmAge() {
-    sessionStorage.setItem('age_ok', '1');
-    document.getElementById('ageGate').classList.remove('show');
-    switchTo('nsfw');
-  }
-  function declineAge() {
-    document.getElementById('ageGate').classList.remove('show');
-  }
-
-  function resetPanel(section) {
-    document.getElementById(`${section}-prompt`).value = '';
-    if (document.getElementById(`${section}-neg`)) document.getElementById(`${section}-neg`).value = '';
-    document.getElementById(`${section}-file`).value = '';
-    state[section].image = null;
-    state[section].imageFile = null;
-    document.getElementById(`${section}-upload`).innerHTML = `
-      <div class="ic">+ UPLOAD</div>
-      <div class="hint">Click or drag to load source frame</div>
-      <input type="file" accept="image/*" id="${section}-file" />
-    `;
-    setupUpload(section);
-    document.getElementById(`${section}-output`).classList.remove('show');
-    document.getElementById(`${section}-video`).style.display = 'none';
-    document.getElementById(`${section}-download`).innerHTML = '';
-  }
-
-  // ========== REAL API CALLS via Netlify Functions ==========
-
-  function setStatus(section, text, kind) {
-    const el = document.getElementById(`${section}-status`);
-    el.className = 'status-line' + (kind ? ' ' + kind : '');
-    el.innerHTML = (kind === 'pending' ? '<span class="spinner"></span>' : '') + text;
-  }
-
-  function showOutput(section) {
-    document.getElementById(`${section}-output`).classList.add('show');
-    document.getElementById(`${section}-output`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  async function uploadImage(section) {
-    setStatus(section, 'Uploading source image...', 'pending');
-    const res = await fetch('/.netlify/functions/upload-image', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        image_base64: state[section].image,
-        filename: state[section].imageFile?.name || 'source.png'
-      })
-    });
-    const text = await res.text();
-    let data;
-    try { data = JSON.parse(text); } catch { data = { raw: text }; }
-    if (!res.ok) throw new Error(data.error || data.raw || `Upload failed (${res.status})`);
-    const url = data.data?.download_url || data.download_url || data.data?.url || data.url;
-    if (!url) throw new Error('Upload OK but no URL in response: ' + JSON.stringify(data).substring(0, 200));
-    return url;
-  }
-
-  async function submitGeneration(section, imageUrl) {
-    setStatus(section, 'Submitting generation request...', 'pending');
-    const m = state[section].model;
-    const prompt = document.getElementById(`${section}-prompt`).value.trim();
-    const resolution = document.getElementById(`${section}-res`).value;
-    const duration = parseInt(document.getElementById(`${section}-dur`).value);
-
-    // Atlas Cloud accepts width/height/duration/fps + image URL.
-    // Resolution mapping is approximate — different models may want exact width/height.
-    const resMap = { '480p': { width: 854, height: 480 }, '720p': { width: 1280, height: 720 }, '1080p': { width: 1920, height: 1080 } };
-    const dims = resMap[resolution] || resMap['720p'];
-
-    const body = {
-      model: m.apiModel,
-      prompt: prompt,
-      image: imageUrl,
-      width: dims.width,
-      height: dims.height,
-      duration: duration,
-      fps: 24
-    };
-    if (section === 'cinema') {
-      const neg = document.getElementById('cinema-neg').value.trim();
-      if (neg) body.negative_prompt = neg;
-    }
-
-    const res = await fetch('/.netlify/functions/generate-video', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || data.data?.error || `Submit failed (${res.status})`);
-    const id = data.data?.id || data.id;
-    if (!id) throw new Error('No prediction ID returned');
-    return id;
-  }
-
-  async function pollStatus(section, predictionId) {
-    const maxAttempts = 100; // ~8 min at 5s intervals
-    for (let i = 0; i < maxAttempts; i++) {
-      await new Promise(r => setTimeout(r, 5000));
-      const res = await fetch(`/.netlify/functions/check-status?id=${encodeURIComponent(predictionId)}`);
-      const data = await res.json();
-      const d = data.data || data;
-      const status = d.status;
-      setStatus(section, `Status: ${status || 'processing'}... (${i + 1}/${maxAttempts})`, 'pending');
-      if (status === 'completed' || status === 'succeeded') {
-        const url = d.outputs?.[0];
-        if (!url) throw new Error('Completed but no output URL');
-        return url;
-      }
-      if (status === 'failed' || status === 'error') {
-        throw new Error(d.error || 'Generation failed');
-      }
-    }
-    throw new Error('Timed out waiting for generation');
-  }
-
-  async function generate(section) {
-    const prompt = document.getElementById(`${section}-prompt`).value.trim();
-    if (!prompt) { alert('Add a prompt first.'); return; }
-    if (!state[section].image) { alert('Upload a source image first.'); return; }
-
-    const btn = document.getElementById(`${section}-run`);
-    btn.disabled = true;
-    document.getElementById(`${section}-video`).style.display = 'none';
-    document.getElementById(`${section}-download`).innerHTML = '';
-    showOutput(section);
-
-    try {
-      const imageUrl = await uploadImage(section);
-      const predId = await submitGeneration(section, imageUrl);
-      setStatus(section, `Submitted (id: ${predId}). Polling for result...`, 'pending');
-      const videoUrl = await pollStatus(section, predId);
-      setStatus(section, '✓ Generation complete.', 'ok');
-      const v = document.getElementById(`${section}-video`);
-      v.src = videoUrl;
-      v.style.display = 'block';
-      document.getElementById(`${section}-download`).innerHTML =
-        `<a class="dl-btn" href="${videoUrl}" download target="_blank">DOWNLOAD MP4</a>`;
-    } catch (err) {
-      setStatus(section, '✗ ' + err.message, 'err');
-    } finally {
-      btn.disabled = false;
-    }
-  }
-
+  // ================================================================
+  // INIT
+  // ================================================================
   renderFilter('cinema', CINEMA_MODELS, 'cinema-models');
   renderFilter('nsfw', NSFW_MODELS, 'nsfw-models');
   renderModels('cinema', CINEMA_MODELS, 'cinema-models');
   renderModels('nsfw', NSFW_MODELS, 'nsfw-models');
-  setupUpload('cinema');
-  setupUpload('nsfw');
-  document.getElementById('cinema-dur').addEventListener('change', () => updateCost('cinema'));
-  document.getElementById('nsfw-dur').addEventListener('change', () => updateCost('nsfw'));
-  updateCost('cinema');
-  updateCost('nsfw');
+  renderStudio('cinema');
+  renderStudio('nsfw');
 </script>
 
 </body>
