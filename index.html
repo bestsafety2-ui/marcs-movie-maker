@@ -2031,32 +2031,32 @@
           if (!outUrl) throw new Error('Completed but no output URL');
           setStatus(section, '✓ Generation complete!', 'ok');
           // Show output — could be video or image
+          // Route through proxy to bypass Alibaba OSS referer policy
+          const proxyUrl = `/.netlify/functions/proxy-download?url=${encodeURIComponent(outUrl)}`;
           const isImage = outUrl.match(/\.(jpg|jpeg|png|webp)$/i) || m.category === 'image' || m.category === 'photo';
           const outputEl = document.getElementById(`${section}-output`);
           const dlEl2 = document.getElementById(`${section}-download`);
           const videoEl2 = document.getElementById(`${section}-video`);
 
           if (isImage) {
-            // Create img element and append — don't use innerHTML+= as it destroys children
             const img = document.createElement('img');
-            img.style.cssText = 'max-width:100%;margin-top:16px;display:block;';
+            img.style.cssText = 'max-width:100%;margin-top:16px;display:block;border:1px solid var(--border);';
             img.onerror = () => {
-              // If image fails to load, show a direct link instead
               const link = document.createElement('a');
-              link.href = outUrl;
+              link.href = proxyUrl;
               link.target = '_blank';
-              link.style.cssText = 'color:var(--gold);font-family:JetBrains Mono,monospace;font-size:12px;display:block;margin-top:12px;word-break:break-all;';
+              link.style.cssText = 'color:var(--gold);font-family:JetBrains Mono,monospace;font-size:12px;display:block;margin-top:12px;';
               link.textContent = '⬇ Image generated — click to open/download';
               if (img.parentNode) img.parentNode.replaceChild(link, img);
             };
-            img.src = outUrl;
+            img.src = proxyUrl;
             outputEl.appendChild(img);
           } else {
-            if (videoEl2) { videoEl2.src = outUrl; videoEl2.style.display = 'block'; }
+            if (videoEl2) { videoEl2.src = proxyUrl; videoEl2.style.display = 'block'; }
           }
 
-          // Always show download link
-          if (dlEl2) dlEl2.innerHTML = `<a class="dl-btn" href="${outUrl}" download target="_blank">⬇ DOWNLOAD</a>`;
+          // Download button uses proxy URL
+          if (dlEl2) dlEl2.innerHTML = `<a class="dl-btn" href="${proxyUrl}" download target="_blank">⬇ DOWNLOAD</a>`;
           return;
         }
         if (status === 'failed' || status === 'error') throw new Error(d.error || 'Generation failed');
