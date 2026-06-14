@@ -545,16 +545,25 @@
 
   .upload-zone {
     border: 1px dashed var(--border);
-    padding: 24px;
+    padding: 24px 16px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
     background: var(--bg);
     position: relative;
+    display: block;
+    width: 100%;
+    min-height: 80px;
   }
   .upload-zone:hover { border-color: var(--accent-cinema); }
   #panel-nsfw .upload-zone:hover { border-color: var(--accent-nsfw); }
-  .upload-zone .ic { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--ink-dim); }
+  .upload-zone .ic {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--ink-dim);
+    display: block;
+    margin-bottom: 4px;
+  }
   .upload-zone .hint { font-style: italic; font-size: 14px; color: var(--ink-dim); margin-top: 4px; }
 
   .upload-zone .upload-hint {
@@ -1536,6 +1545,44 @@
 
     // === IMAGE GEN ===
     {
+      category: 'image', id: 'seedream-v5-edit', apiModel: 'bytedance/seedream-v5.0-lite/image-to-image-edit',
+      name: 'Seedream v5.0 Lite Edit', tag: 'i2i • BYTEDANCE',
+      desc: 'Best for editing existing photos. Preserves facial features while changing outfit, style, or appearance. $0.032/pic.',
+      price: 0.032, maxDur: 0, ribbon: { text: 'BEST EDIT', cls: 'hot' },
+      specs: ['$0.032/PIC', 'FACE PRESERVE', 'EDIT PHOTO'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Edit Instruction', required: true, hint: 'e.g. "wearing a red bikini" or "nude, photorealistic"' },
+        { key: 'image', type: 'image', label: 'Source Photo', required: true, hint: 'The photo you want to edit.' },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'image', id: 'seedream-v5-edit-seq', apiModel: 'bytedance/seedream-v5.0-lite/image-to-image-edit-sequential',
+      name: 'Seedream v5.0 Edit Sequential', tag: 'i2i • BATCH',
+      desc: 'Same as Seedream Edit but processes multiple variations in one run. Great for generating 4-8 versions at once. $0.032/pic.',
+      price: 0.032, maxDur: 0, ribbon: null,
+      specs: ['$0.032/PIC', 'BATCH MODE', 'MULTI-VARIANT'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Edit Instruction', required: true },
+        { key: 'image', type: 'image', label: 'Source Photo', required: true },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'image', id: 'flux-kontext', apiModel: 'black-forest-labs/flux-kontext-dev',
+      name: 'FLUX Kontext Dev', tag: 'i2i • BLACK FOREST',
+      desc: 'Context-aware inpainting. Reads surrounding pixels to match lighting, skin tone, and perspective when editing. Best for precise regional changes. $0.025/pic.',
+      price: 0.025, maxDur: 0, ribbon: null,
+      specs: ['$0.025/PIC', 'INPAINTING', 'CONTEXT-AWARE'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Edit Instruction', required: true, hint: 'Describe what to change. Be specific about the region.' },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
       category: 'image', id: 'flux-schnell', apiModel: 'black-forest-labs/flux-schnell',
       name: 'FLUX Schnell', tag: 'image • BLACK FOREST',
       desc: 'Fastest uncensored image gen. No filters. $0.003/pic — $3 = 1,000 images. Best for batch and prototyping.',
@@ -2018,8 +2065,8 @@
 
       setStatus(section, `Submitted (id: ${predId}). Processing...`, 'pending');
 
-      // Poll for result
-      for (let i = 0; i < 120; i++) {
+      // Poll for result — up to 15 min (180 × 5s)
+      for (let i = 0; i < 180; i++) {
         await new Promise(r => setTimeout(r, 5000));
         const pollRes = await fetch(`/.netlify/functions/check-status?id=${encodeURIComponent(predId)}`);
         const pollData = await pollRes.json();
@@ -2027,12 +2074,13 @@
         const status = d.status;
         setStatus(section, `Status: ${status || 'processing'}... (${i + 1})`, 'pending');
         if (status === 'completed' || status === 'succeeded') {
-          const outUrl = d.outputs?.[0];
-          if (!outUrl) throw new Error('Completed but no output URL');
+          // Handle different output formats from Atlas Cloud
+          const outUrl = d.outputs?.[0] || d.output?.[0] || d.output || d.video_url || d.image_url || d.url;
+          if (!outUrl) throw new Error('Completed but no output URL found. Check Atlas Cloud dashboard.');
           setStatus(section, '✓ Generation complete!', 'ok');
           // Show output — could be video or image
-          // Route through proxy to bypass Alibaba OSS referer policy
-          const proxyUrl = `/.netlify/functions/proxy-download?url=${encodeURIComponent(outUrl)}`;
+          // Use referrerpolicy="no-referrer" to bypass Alibaba OSS referer policy
+          // This prevents the browser sending a Referer header — no proxy needed
           const isImage = outUrl.match(/\.(jpg|jpeg|png|webp)$/i) || m.category === 'image' || m.category === 'photo';
           const outputEl = document.getElementById(`${section}-output`);
           const dlEl2 = document.getElementById(`${section}-download`);
@@ -2040,23 +2088,30 @@
 
           if (isImage) {
             const img = document.createElement('img');
+            img.setAttribute('referrerpolicy', 'no-referrer');
             img.style.cssText = 'max-width:100%;margin-top:16px;display:block;border:1px solid var(--border);';
             img.onerror = () => {
+              img.style.display = 'none';
               const link = document.createElement('a');
-              link.href = proxyUrl;
+              link.href = outUrl;
               link.target = '_blank';
+              link.setAttribute('referrerpolicy', 'no-referrer');
               link.style.cssText = 'color:var(--gold);font-family:JetBrains Mono,monospace;font-size:12px;display:block;margin-top:12px;';
-              link.textContent = '⬇ Image generated — click to open/download';
-              if (img.parentNode) img.parentNode.replaceChild(link, img);
+              link.textContent = '⬇ Image generated — click to open';
+              outputEl.appendChild(link);
             };
-            img.src = proxyUrl;
+            img.src = outUrl;
             outputEl.appendChild(img);
           } else {
-            if (videoEl2) { videoEl2.src = proxyUrl; videoEl2.style.display = 'block'; }
+            if (videoEl2) {
+              videoEl2.setAttribute('referrerpolicy', 'no-referrer');
+              videoEl2.src = outUrl;
+              videoEl2.style.display = 'block';
+            }
           }
 
-          // Download button uses proxy URL
-          if (dlEl2) dlEl2.innerHTML = `<a class="dl-btn" href="${proxyUrl}" download target="_blank">⬇ DOWNLOAD</a>`;
+          // Download button with no-referrer policy
+          if (dlEl2) dlEl2.innerHTML = `<a class="dl-btn" href="${outUrl}" target="_blank" rel="noreferrer" referrerpolicy="no-referrer">⬇ DOWNLOAD</a>`;
           return;
         }
         if (status === 'failed' || status === 'error') throw new Error(d.error || 'Generation failed');
