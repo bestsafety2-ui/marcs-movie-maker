@@ -643,6 +643,65 @@
     border: 1px solid var(--border);
   }
   .btn-secondary:hover { border-color: var(--ink); }
+  .btn-save { flex: 0 1 auto; min-width: 90px; }
+
+  /* The Roster — preset grid */
+  .preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .preset-btn {
+    padding: 12px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .preset-btn:hover { border-color: var(--gold); color: var(--gold); }
+  #panel-nsfw .preset-btn:hover { border-color: var(--crimson-bright); color: var(--crimson-bright); }
+
+  /* Personal Prompt Library */
+  .prompt-chips { display: none; margin-bottom: 4px; }
+  .chip-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .saved-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border: 1px solid var(--gold);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #panel-nsfw .saved-chip { border-color: var(--crimson); }
+  .saved-chip:hover { background: rgba(212,175,108,0.1); }
+  #panel-nsfw .saved-chip:hover { background: rgba(180,40,50,0.1); }
+  .chip-x {
+    color: var(--ink-dim);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 2px;
+  }
+  .chip-x:hover { color: var(--crimson-bright); }
+
 
   .output {
     margin-top: 24px;
@@ -1246,13 +1305,27 @@
         { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p'], default: '720p' }
       ]
     },
+    {
+      category: 'edit', id: 'kling-motion-control', apiModel: 'kwaivgi/kling-2.6-pro/motion-control',
+      name: 'Kling 2.6 Motion Control', tag: 'motion • KUAISHOU',
+      desc: 'Upload a character image and a real motion clip (dance, gesture, action) — transfers that exact movement while preserving identity. Great for Motion Forge style workflows: capture a real move once, reuse it on any character.',
+      price: 0.095, maxDur: 10, ribbon: { text: 'NEW', cls: 'new' },
+      specs: ['1080P', 'MOTION TRANSFER', 'IDENTITY LOCK'],
+      inputs: [
+        { key: 'image', type: 'image', label: 'Character Image', required: true, hint: 'The character you want to animate.' },
+        { key: 'video', type: 'video', label: 'Motion Reference Video', required: true, hint: 'Real video of the dance/action/gesture to copy.' },
+        { key: 'prompt', type: 'prompt', label: 'Prompt (optional)' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['720p','1080p'], default: '1080p' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
 
     // === EFFECTS (one-click, image only) ===
     {
       category: 'effects', id: 'fx-hulk', apiModel: 'video-effects/hulk',
       name: 'Hulk Transform', tag: 'effect • ONE-CLICK',
       desc: 'Transform any person into the Hulk. Best with half-body or full-body single-person photos. No prompt needed.',
-      price: 0.032, maxDur: 5, ribbon: { text: 'GRONK MODE', cls: 'hot' },
+      price: 0.032, maxDur: 0, ribbon: { text: 'GRONK MODE', cls: 'hot' },
       specs: ['1-CLICK', 'SINGLE PERSON', 'FUNNY'],
       inputs: [
         { key: 'image', type: 'image', label: 'Person Photo', required: true, hint: 'Single person, half-body or full-body works best.' }
@@ -1262,7 +1335,7 @@
       category: 'effects', id: 'fx-flying', apiModel: 'video-effects/flying',
       name: 'Flying', tag: 'effect • ONE-CLICK',
       desc: 'Makes a person fly. Realistic-style single-person photos. Best with full-body shots and scenic backgrounds.',
-      price: 0.032, maxDur: 5, ribbon: null,
+      price: 0.032, maxDur: 0, ribbon: null,
       specs: ['1-CLICK', 'SINGLE PERSON'],
       inputs: [
         { key: 'image', type: 'image', label: 'Person Photo', required: true, hint: 'Full-body shot with scenic background works best.' }
@@ -1272,7 +1345,7 @@
       category: 'effects', id: 'fx-body-shake', apiModel: 'video-effects/body-shake',
       name: 'Body Shake', tag: 'effect • ONE-CLICK',
       desc: 'Body shake dance animation. Works on realistic and anime-style photos. Person must be visible from thighs up.',
-      price: 0.032, maxDur: 5, ribbon: null,
+      price: 0.032, maxDur: 0, ribbon: null,
       specs: ['1-CLICK', 'DANCE'],
       inputs: [
         { key: 'image', type: 'image', label: 'Person Photo', required: true, hint: 'Person visible from thighs up works best.' }
@@ -1282,7 +1355,7 @@
       category: 'effects', id: 'fx-shake-dance', apiModel: 'video-effects/shake-dance',
       name: 'Shake Dance', tag: 'effect • ONE-CLICK',
       desc: 'Viral shake dance animation. Upload any person photo and they start dancing.',
-      price: 0.032, maxDur: 5, ribbon: null,
+      price: 0.032, maxDur: 0, ribbon: null,
       specs: ['1-CLICK', 'DANCE', 'VIRAL'],
       inputs: [
         { key: 'image', type: 'image', label: 'Person Photo', required: true }
@@ -1292,7 +1365,7 @@
       category: 'effects', id: 'fx-zoom-out', apiModel: 'video-effects/zoom-out',
       name: 'Cinematic Zoom Out', tag: 'effect • ONE-CLICK',
       desc: 'Dramatic cinematic zoom-out from any image. Best for product shots and scenic views.',
-      price: 0.032, maxDur: 5, ribbon: null,
+      price: 0.032, maxDur: 0, ribbon: null,
       specs: ['1-CLICK', 'CINEMATIC'],
       inputs: [
         { key: 'image', type: 'image', label: 'Source Image', required: true }
@@ -1302,7 +1375,7 @@
       category: 'effects', id: 'fx-gender-swap', apiModel: 'video-effects/gender-swap',
       name: 'Gender Swap', tag: 'effect • ONE-CLICK',
       desc: 'Swaps the gender appearance of a person in a photo. Great for funny content.',
-      price: 0.032, maxDur: 5, ribbon: null,
+      price: 0.032, maxDur: 0, ribbon: null,
       specs: ['1-CLICK', 'FUNNY'],
       inputs: [
         { key: 'image', type: 'image', label: 'Person Photo', required: true }
@@ -1396,9 +1469,26 @@
       ]
     },
     {
+      category: 'generate', id: 'wan-2.2-turbo-spicy-lora', apiModel: 'atlascloud/wan-2.2-turbo-spicy/image-to-video-lora',
+      name: 'Wan 2.2 Turbo Spicy + LoRA', tag: 'i2v • BETTER IDENTITY',
+      desc: 'Newer rCM Turbo architecture with anchor-frame identity tracking — holds your LoRA character steady across the whole clip instead of drifting. Better realism than the standard Spicy LoRA model.',
+      price: 0.026, maxDur: 8, ribbon: { text: 'TRY THIS', cls: 'hot' },
+      specs: ['480P-1080P', 'LORA', 'ANCHOR-FRAME', 'LESS DRIFT'],
+      inputs: [
+        { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
+        { key: 'image', type: 'image', label: 'Source Image', required: true },
+        { key: 'lora_url', type: 'text', label: 'LoRA URL', hint: 'Civitai or HuggingFace .safetensors URL', placeholder: 'https://civitai.com/api/download/models/...' },
+        { key: 'lora_strength', type: 'select', label: 'LoRA Strength', options: ['0.3','0.5','0.7','1.0'], default: '0.7' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 8 },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
       category: 'generate', id: 'wan-2.2-spicy-lora', apiModel: 'alibaba/wan-2.2-spicy/image-to-video-lora',
-      name: 'Wan 2.2 Spicy + LoRA', tag: 'i2v • LORA READY',
-      desc: 'Community favorite for anatomy/body realism. Add your Civitai or HuggingFace LoRA URL. High Noise = overall style, Low Noise = detail.',
+      name: 'Wan 2.2 Spicy + LoRA (Older)', tag: 'i2v • LORA READY',
+      desc: 'Original Spicy LoRA pipeline. Add your Civitai or HuggingFace LoRA URL. High Noise = overall style, Low Noise = detail. Try the Turbo version above first for better identity consistency.',
       price: 0.040, maxDur: 10, ribbon: null,
       specs: ['720P-1080P', 'LORA', 'BODY REALISM'],
       inputs: [
@@ -1506,7 +1596,7 @@
       category: 'effects', id: 'fx-jiggle', apiModel: 'video-effects/jiggle-up',
       name: 'Jiggle Up', tag: 'effect • ONE-CLICK',
       desc: 'Jiggle animation effect on a person. Upload photo, no prompt needed.',
-      price: 0.032, maxDur: 5, ribbon: { text: 'HOT', cls: 'hot' },
+      price: 0.032, maxDur: 0, ribbon: { text: 'HOT', cls: 'hot' },
       specs: ['1-CLICK', 'NO PROMPT'],
       inputs: [
         { key: 'image', type: 'image', label: 'Person Photo', required: true }
@@ -1516,7 +1606,7 @@
       category: 'effects', id: 'fx-sexy-me', apiModel: 'video-effects/sexy-me',
       name: 'Sexy Me', tag: 'effect • ONE-CLICK',
       desc: 'Applies a sexy appearance transformation effect. Single person photo, no prompt needed.',
-      price: 0.032, maxDur: 5, ribbon: null,
+      price: 0.032, maxDur: 0, ribbon: null,
       specs: ['1-CLICK', 'NO PROMPT'],
       inputs: [
         { key: 'image', type: 'image', label: 'Person Photo', required: true }
@@ -1526,7 +1616,7 @@
       category: 'effects', id: 'fx-french-kiss', apiModel: 'video-effects/french-kiss',
       name: 'French Kiss', tag: 'effect • ONE-CLICK',
       desc: 'Kiss animation effect. Upload photo, no prompt needed.',
-      price: 0.032, maxDur: 5, ribbon: null,
+      price: 0.032, maxDur: 0, ribbon: null,
       specs: ['1-CLICK', 'NO PROMPT'],
       inputs: [
         { key: 'image', type: 'image', label: 'Person Photo', required: true }
@@ -1536,7 +1626,7 @@
       category: 'effects', id: 'fx-love-drop', apiModel: 'video-effects/love-drop',
       name: 'Love Drop', tag: 'effect • ONE-CLICK',
       desc: 'Love/romantic animation effect. Upload photo, no prompt needed.',
-      price: 0.032, maxDur: 5, ribbon: null,
+      price: 0.032, maxDur: 0, ribbon: null,
       specs: ['1-CLICK', 'NO PROMPT'],
       inputs: [
         { key: 'image', type: 'image', label: 'Person Photo', required: true }
@@ -1623,8 +1713,100 @@
         { key: 'height', type: 'select', label: 'Height', options: ['512','768','1024'], default: '1024' },
         { key: 'seed', type: 'seed' }
       ]
+    },
+
+    // === THE ROSTER — LoRA-gated character presets ===
+    // These only produce results when a trained, consented character LoRA is loaded.
+    // No path exists here for a blank/random photo — the LoRA URL field is required.
+    {
+      category: 'roster', id: 'roster-positions', apiModel: 'atlascloud/wan-2.2-turbo-spicy/image-to-video-lora',
+      name: 'Position Presets', tag: 'i2v • LORA REQUIRED',
+      desc: 'One-click position prompts, built for accuracy with a trained character LoRA. Anchored to your actual character instead of guessing a generic body.',
+      price: 0.026, maxDur: 8, ribbon: { text: 'LORA REQUIRED', cls: 'hot' },
+      specs: ['LORA REQUIRED', 'ONE-CLICK', 'ANCHOR-FRAME'],
+      inputs: [
+        { key: 'trigger', type: 'trigger_word', label: 'Character Trigger Word', required: true, hint: 'Saved automatically for next time you open this model.' },
+        { key: 'lora_url', type: 'text', label: 'LoRA URL', required: true, hint: 'Civitai or HuggingFace .safetensors URL', placeholder: 'https://huggingface.co/you/character/resolve/main/file.safetensors' },
+        { key: 'lora_strength', type: 'select', label: 'LoRA Strength', options: ['0.5','0.7','0.8','1.0'], default: '0.7' },
+        { key: 'preset', type: 'preset_grid', label: 'Choose a Position', presets: 'POSITION_PRESETS' },
+        { key: 'image', type: 'image', label: 'Reference Photo', required: true },
+        { key: 'prompt', type: 'prompt', label: 'Prompt (auto-filled — edit if needed)', required: true },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 8 },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'roster', id: 'roster-outfit', apiModel: 'black-forest-labs/flux-dev-lora',
+      name: 'Outfit & Clothing', tag: 'i2i • LORA REQUIRED',
+      desc: 'Remove, swap, or change clothing — anchored to your trained character LoRA so the body stays accurate instead of being guessed from a generic dataset.',
+      price: 0.015, maxDur: 0, ribbon: { text: 'LORA REQUIRED', cls: 'hot' },
+      specs: ['LORA REQUIRED', 'ACCURATE BODY', '$0.015/PIC'],
+      inputs: [
+        { key: 'trigger', type: 'trigger_word', label: 'Character Trigger Word', required: true, hint: 'Saved automatically for next time you open this model.' },
+        { key: 'lora_url', type: 'text', label: 'LoRA URL', required: true, hint: 'Civitai or HuggingFace .safetensors URL', placeholder: 'https://huggingface.co/you/character/resolve/main/file.safetensors' },
+        { key: 'lora_scale', type: 'select', label: 'LoRA Strength', options: ['0.5','0.75','1.0'], default: '0.75' },
+        { key: 'preset', type: 'preset_grid', label: 'Choose an Outfit Change', presets: 'OUTFIT_PRESETS' },
+        { key: 'image', type: 'image', label: 'Source Photo', required: true },
+        { key: 'prompt', type: 'prompt', label: 'Edit Instruction (auto-filled — edit if needed)', required: true },
+        { key: 'width', type: 'select', label: 'Width', options: ['512','768','1024'], default: '1024' },
+        { key: 'height', type: 'select', label: 'Height', options: ['512','768','1024'], default: '1024' },
+        { key: 'seed', type: 'seed' }
+      ]
+    },
+    {
+      category: 'roster', id: 'roster-scenes', apiModel: 'atlascloud/wan-2.2-turbo-spicy/image-to-video-lora',
+      name: 'Scene & Location', tag: 'i2v • LORA REQUIRED',
+      desc: 'Drop your character into any location — beach, penthouse, club, anywhere — with consistent appearance across every fake location, anchored by your LoRA.',
+      price: 0.026, maxDur: 8, ribbon: { text: 'LORA REQUIRED', cls: 'hot' },
+      specs: ['LORA REQUIRED', 'ANY LOCATION', 'CONSISTENT LOOK'],
+      inputs: [
+        { key: 'trigger', type: 'trigger_word', label: 'Character Trigger Word', required: true, hint: 'Saved automatically for next time you open this model.' },
+        { key: 'lora_url', type: 'text', label: 'LoRA URL', required: true, hint: 'Civitai or HuggingFace .safetensors URL', placeholder: 'https://huggingface.co/you/character/resolve/main/file.safetensors' },
+        { key: 'lora_strength', type: 'select', label: 'LoRA Strength', options: ['0.5','0.7','0.8','1.0'], default: '0.7' },
+        { key: 'preset', type: 'preset_grid', label: 'Choose a Scene', presets: 'SCENE_PRESETS' },
+        { key: 'image', type: 'image', label: 'Reference Photo', required: true },
+        { key: 'prompt', type: 'prompt', label: 'Prompt (auto-filled — edit if needed)', required: true },
+        { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
+        { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '720p' },
+        { key: 'duration', type: 'duration', max: 8 },
+        { key: 'seed', type: 'seed' }
+      ]
     }
   ];
+
+  // ================================================================
+  // THE ROSTER — preset prompt templates
+  // {trigger} gets replaced with the saved character trigger word at click time.
+  // ================================================================
+  const POSITION_PRESETS = [
+    { label: 'Missionary', template: '{trigger}, lying on back, knees bent, legs apart, partner kneeling between her legs, intimate eye contact. Camera: front angle, medium shot. Lighting: soft warm light.', negative: 'deformed anatomy, distorted, extra limbs, fused bodies, blurry' },
+    { label: 'Doggy Style', template: '{trigger}, kneeling on hands and knees, partner kneeling behind her, arched back. Camera: low angle from behind, slight side offset. Lighting: dim ambient.', negative: 'deformed anatomy, distorted, fused bodies, blurry' },
+    { label: 'Cowgirl', template: '{trigger}, straddling partner who is lying down, hands on his chest, hips moving. Camera: slightly elevated front angle, medium shot. Lighting: warm side light.', negative: 'deformed anatomy, distorted, extra limbs, blurry' },
+    { label: 'Oral (Giving)', template: '{trigger}, kneeling, head lowered, partner standing in front of her. Camera: side angle, medium-close shot. Lighting: soft directional light.', negative: 'deformed anatomy, distorted face, blurry' },
+    { label: 'Standing, From Behind', template: '{trigger}, standing, bent forward slightly, partner standing behind her. Camera: side angle, full body shot. Lighting: dim moody light.', negative: 'deformed anatomy, distorted, fused bodies, blurry' },
+    { label: 'Side / Spooning', template: '{trigger}, lying on side, partner behind her, close body contact. Camera: side angle, medium shot. Lighting: soft warm light.', negative: 'deformed anatomy, distorted, extra limbs, blurry' }
+  ];
+
+  const OUTFIT_PRESETS = [
+    { label: 'Remove Top', template: '{trigger}, remove top clothing, keep everything else the same, photorealistic, natural skin texture', negative: 'deformed anatomy, distorted, blurry, extra limbs' },
+    { label: 'Remove All Clothing', template: '{trigger}, nude, photorealistic, natural lighting preserved, accurate body proportions', negative: 'deformed anatomy, distorted, blurry, extra limbs, malformed' },
+    { label: 'Lingerie', template: '{trigger}, wearing black lace lingerie, photorealistic, natural fit, soft lighting', negative: 'deformed anatomy, distorted, blurry' },
+    { label: 'Bikini', template: '{trigger}, wearing a fitted bikini, photorealistic, natural fit, outdoor lighting', negative: 'deformed anatomy, distorted, blurry' },
+    { label: 'Casual to Glam', template: '{trigger}, wearing an elegant fitted dress, glamorous styling, professional photo lighting', negative: 'deformed anatomy, distorted, blurry' },
+    { label: 'Wet Look', template: '{trigger}, wet skin and hair, natural water droplets, photorealistic, soft natural light', negative: 'deformed anatomy, distorted, blurry' }
+  ];
+
+  const SCENE_PRESETS = [
+    { label: 'Beach Sunset', template: '{trigger}, standing on a beach at golden hour, ocean waves in background, warm orange light, gentle breeze', negative: 'deformed anatomy, distorted, blurry, extra limbs' },
+    { label: 'Vegas Penthouse', template: '{trigger}, in a luxury penthouse suite at night, city lights through floor-to-ceiling windows, ambient mood lighting', negative: 'deformed anatomy, distorted, blurry, extra limbs' },
+    { label: 'Poolside', template: '{trigger}, lounging poolside, bright sunny day, clear blue water reflections, natural daylight', negative: 'deformed anatomy, distorted, blurry, extra limbs' },
+    { label: 'Dark Nightclub', template: '{trigger}, in a dark nightclub, colorful neon lighting, moody atmosphere, shallow depth of field', negative: 'deformed anatomy, distorted, blurry, extra limbs' },
+    { label: 'Studio Photoshoot', template: '{trigger}, professional photo studio, clean white backdrop, soft studio lighting, fashion photography style', negative: 'deformed anatomy, distorted, blurry, extra limbs' },
+    { label: 'Cozy Bedroom', template: '{trigger}, in a cozy bedroom, soft warm lamp light, comfortable intimate atmosphere', negative: 'deformed anatomy, distorted, blurry, extra limbs' }
+  ];
+  const ROSTER_PRESET_MAP = { POSITION_PRESETS, OUTFIT_PRESETS, SCENE_PRESETS };
 
   const CATEGORIES_CINEMA = [
     { key: 'all', label: 'All' },
@@ -1636,6 +1818,7 @@
 
   const CATEGORIES_NSFW = [
     { key: 'all', label: 'All' },
+    { key: 'roster', label: '🎭 The Roster' },
     { key: 'generate', label: 'Generate' },
     { key: 'infinite', label: '🎬 Infinite (30s)' },
     { key: 'edit', label: 'Edit' },
@@ -1765,11 +1948,29 @@
           break;
         case 'text':
           fieldsHtml += `<div class="field">
-            <label class="field-label">${inp.label}</label>
+            <label class="field-label">${inp.label} ${req}</label>
             <input type="text" id="${section}-${inp.key}" placeholder="${inp.placeholder||''}">
             ${hint}
           </div>`;
           break;
+        case 'trigger_word':
+          fieldsHtml += `<div class="field">
+            <label class="field-label">${inp.label} ${req}</label>
+            <input type="text" id="${section}-${inp.key}" placeholder="e.g. carolita" oninput="saveTriggerWord('${section}', this.value)">
+            ${hint}
+          </div>`;
+          break;
+        case 'preset_grid': {
+          const presetList = typeof inp.presets === 'string' ? (ROSTER_PRESET_MAP[inp.presets] || []) : (inp.presets || []);
+          fieldsHtml += `<div class="field">
+            <label class="field-label">${inp.label}</label>
+            <div class="preset-grid">
+              ${presetList.map((p, i) => `<button type="button" class="preset-btn" onclick='applyPreset("${section}", ${JSON.stringify(p).replace(/'/g, "&#39;")})'>${p.label}</button>`).join('')}
+            </div>
+            <div class="helper">Tap a preset to auto-fill the prompt below. Edit freely after.</div>
+          </div>`;
+          break;
+        }
         case 'toggle':
           fieldsHtml += `<div class="field field-toggle">
             <label class="field-label">${inp.label}</label>
@@ -1796,6 +1997,7 @@
           <div class="selected-model" id="${section}-selected-name">${m.name}</div>
         </div>
       </div>
+      <div class="prompt-chips" id="${section}-prompt-chips"></div>
       ${fieldsHtml}
       ${durationHtml}
       <div class="estimate">
@@ -1805,6 +2007,7 @@
       </div>
       <div class="actions">
         <button class="btn btn-secondary" onclick="resetPanel('${section}')">RESET</button>
+        <button class="btn btn-secondary btn-save" onclick="openSavePromptForm('${section}')">💾 SAVE</button>
         <button class="btn btn-primary" id="${section}-run" onclick="generate('${section}')">RUN GENERATION</button>
       </div>
       <div class="output" id="${section}-output">
@@ -1814,6 +2017,15 @@
         <div id="${section}-download"></div>
       </div>
     `;
+
+    // Restore saved trigger word for this section, if this model has one
+    const trigInput = document.getElementById(`${section}-trigger`);
+    if (trigInput) {
+      trigInput.value = localStorage.getItem(`mmmm_trigger_${section}`) || '';
+    }
+
+    // Render any saved prompts matching this exact model
+    renderPromptChips(section);
   }
 
   // ================================================================
@@ -1954,6 +2166,14 @@
       // Validate required fields and collect values
       for (const inp of m.inputs) {
         if (inp.key === 'duration') continue;
+        if (inp.type === 'preset_grid') continue; // UI helper only, not an API param
+        if (inp.type === 'trigger_word') {
+          const trigEl = document.getElementById(`${section}-${inp.key}`);
+          if (inp.required && (!trigEl || !trigEl.value.trim())) {
+            throw new Error(`${inp.label} is required — this anchors every preset to your character`);
+          }
+          continue; // already baked into the prompt text by applyPreset()
+        }
 
         const elId = `${section}-${inp.key}`;
 
@@ -2143,6 +2363,106 @@
   function resetPanel(section) {
     state[section].files = {};
     renderStudio(section);
+  }
+
+  // ================================================================
+  // THE ROSTER — trigger word persistence + preset application
+  // ================================================================
+  function saveTriggerWord(section, val) {
+    localStorage.setItem(`mmmm_trigger_${section}`, val);
+  }
+
+  function applyPreset(section, preset) {
+    const trigEl = document.getElementById(`${section}-trigger`);
+    const trigger = (trigEl && trigEl.value.trim()) || '{trigger}';
+    const promptEl = document.getElementById(`${section}-prompt`);
+    if (promptEl) promptEl.value = preset.template.replace(/\{trigger\}/g, trigger);
+    const negEl = document.getElementById(`${section}-negative_prompt`);
+    if (negEl && preset.negative) negEl.value = preset.negative;
+    if (promptEl) promptEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ================================================================
+  // PERSONAL PROMPT LIBRARY — saved locally on this device
+  // ================================================================
+  function getPromptLibrary() {
+    try { return JSON.parse(localStorage.getItem('mmmm_prompt_library') || '[]'); }
+    catch { return []; }
+  }
+
+  function savePromptLibraryData(arr) {
+    localStorage.setItem('mmmm_prompt_library', JSON.stringify(arr));
+  }
+
+  function openSavePromptForm(section) {
+    const m = state[section].model;
+    const promptEl = document.getElementById(`${section}-prompt`);
+    if (!promptEl || !promptEl.value.trim()) {
+      alert('Write or generate a prompt first, then save it.');
+      return;
+    }
+    const name = window.prompt('Name this prompt (e.g. "Maria warm-up stretch"):');
+    if (!name || !name.trim()) return;
+
+    const entry = {
+      id: Date.now().toString(),
+      section,
+      modelId: m.id,
+      modelName: m.name,
+      name: name.trim(),
+      prompt: promptEl.value,
+      negative_prompt: document.getElementById(`${section}-negative_prompt`)?.value || '',
+      lora_url: document.getElementById(`${section}-lora_url`)?.value || '',
+      lora_field: document.getElementById(`${section}-lora_strength`) ? 'lora_strength' : (document.getElementById(`${section}-lora_scale`) ? 'lora_scale' : null),
+      lora_value: document.getElementById(`${section}-lora_strength`)?.value || document.getElementById(`${section}-lora_scale`)?.value || '',
+      trigger: document.getElementById(`${section}-trigger`)?.value || '',
+      seed: document.getElementById(`${section}-seed`)?.value || '-1',
+      createdAt: Date.now()
+    };
+
+    const lib = getPromptLibrary();
+    lib.push(entry);
+    savePromptLibraryData(lib);
+    renderPromptChips(section);
+  }
+
+  function loadSavedPrompt(section, id) {
+    const entry = getPromptLibrary().find(e => e.id === id);
+    if (!entry) return;
+    const promptEl = document.getElementById(`${section}-prompt`);
+    if (promptEl) promptEl.value = entry.prompt;
+    const negEl = document.getElementById(`${section}-negative_prompt`);
+    if (negEl) negEl.value = entry.negative_prompt || '';
+    const loraEl = document.getElementById(`${section}-lora_url`);
+    if (loraEl && entry.lora_url) loraEl.value = entry.lora_url;
+    if (entry.lora_field) {
+      const loraStrengthEl = document.getElementById(`${section}-${entry.lora_field}`);
+      if (loraStrengthEl && entry.lora_value) loraStrengthEl.value = entry.lora_value;
+    }
+    const trigEl = document.getElementById(`${section}-trigger`);
+    if (trigEl && entry.trigger) trigEl.value = entry.trigger;
+    const seedEl = document.getElementById(`${section}-seed`);
+    if (seedEl && entry.seed) seedEl.value = entry.seed;
+  }
+
+  function deleteSavedPrompt(section, id, evt) {
+    if (evt) evt.stopPropagation();
+    if (!confirm('Delete this saved prompt?')) return;
+    const lib = getPromptLibrary().filter(e => e.id !== id);
+    savePromptLibraryData(lib);
+    renderPromptChips(section);
+  }
+
+  function renderPromptChips(section) {
+    const m = state[section].model;
+    const container = document.getElementById(`${section}-prompt-chips`);
+    if (!container) return;
+    const lib = getPromptLibrary().filter(e => e.section === section && e.modelId === m.id);
+    if (lib.length === 0) { container.innerHTML = ''; container.style.display = 'none'; return; }
+    container.style.display = 'block';
+    container.innerHTML = `<div class="chip-label">📚 MY SAVED PROMPTS</div><div class="chip-row">` +
+      lib.map(e => `<span class="saved-chip" onclick="loadSavedPrompt('${section}','${e.id}')">${e.name}<span class="chip-x" onclick="deleteSavedPrompt('${section}','${e.id}', event)">×</span></span>`).join('') +
+      `</div>`;
   }
 
   function switchTo(section) {
