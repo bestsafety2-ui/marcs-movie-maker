@@ -1469,16 +1469,14 @@
       ]
     },
     {
-      category: 'generate', id: 'wan-2.2-turbo-spicy-lora', apiModel: 'atlascloud/wan-2.2-turbo-spicy/image-to-video-lora',
-      name: 'Wan 2.2 Turbo Spicy + LoRA', tag: 'i2v • BETTER IDENTITY',
-      desc: 'Newer rCM Turbo architecture with anchor-frame identity tracking — holds your LoRA character steady across the whole clip instead of drifting. Better realism than the standard Spicy LoRA model.',
-      price: 0.026, maxDur: 8, ribbon: { text: 'TRY THIS', cls: 'hot' },
-      specs: ['480P-1080P', 'LORA', 'ANCHOR-FRAME', 'LESS DRIFT'],
+      category: 'generate', id: 'wan-2.2-turbo-spicy-quality', apiModel: 'atlascloud/wan-2.2-turbo-spicy/image-to-video-lora',
+      name: 'Wan 2.2 Turbo Spicy (Quality)', tag: 'i2v • NO CUSTOM LORA',
+      desc: 'Newer rCM Turbo architecture, built-in identity stability. CANNOT accept a custom LoRA file — its own internal architecture uses LoRA techniques, but there is no slot for your file. For your own trained character, use "Wan 2.2 Spicy + LoRA" below instead.',
+      price: 0.026, maxDur: 8, ribbon: { text: 'NO LORA SLOT', cls: 'new' },
+      specs: ['480P-1080P', 'NO CUSTOM LORA', 'GOOD QUALITY'],
       inputs: [
         { key: 'prompt', type: 'prompt', label: 'Prompt', required: true },
         { key: 'image', type: 'image', label: 'Source Image', required: true },
-        { key: 'lora_url', type: 'text', label: 'LoRA URL', hint: 'Civitai or HuggingFace .safetensors URL', placeholder: 'https://civitai.com/api/download/models/...' },
-        { key: 'lora_strength', type: 'select', label: 'LoRA Strength', options: ['0.3','0.5','0.7','1.0'], default: '0.7' },
         { key: 'resolution', type: 'select', label: 'Resolution', options: ['480p','720p','1080p'], default: '720p' },
         { key: 'duration', type: 'duration', max: 8 },
         { key: 'negative_prompt', type: 'neg-prompt', label: 'Negative Prompt' },
@@ -1719,7 +1717,7 @@
     // These only produce results when a trained, consented character LoRA is loaded.
     // No path exists here for a blank/random photo — the LoRA URL field is required.
     {
-      category: 'roster', id: 'roster-positions', apiModel: 'atlascloud/wan-2.2-turbo-spicy/image-to-video-lora',
+      category: 'roster', id: 'roster-positions', apiModel: 'alibaba/wan-2.2-spicy/image-to-video-lora',
       name: 'Position Presets', tag: 'i2v • LORA REQUIRED',
       desc: 'One-click position prompts, built for accuracy with a trained character LoRA. Anchored to your actual character instead of guessing a generic body.',
       price: 0.026, maxDur: 8, ribbon: { text: 'LORA REQUIRED', cls: 'hot' },
@@ -1756,7 +1754,7 @@
       ]
     },
     {
-      category: 'roster', id: 'roster-scenes', apiModel: 'atlascloud/wan-2.2-turbo-spicy/image-to-video-lora',
+      category: 'roster', id: 'roster-scenes', apiModel: 'alibaba/wan-2.2-spicy/image-to-video-lora',
       name: 'Scene & Location', tag: 'i2v • LORA REQUIRED',
       desc: 'Drop your character into any location — beach, penthouse, club, anywhere — with consistent appearance across every fake location, anchored by your LoRA.',
       price: 0.026, maxDur: 8, ribbon: { text: 'LORA REQUIRED', cls: 'hot' },
